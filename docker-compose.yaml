@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik:v2.4
+    restart: unless-stopped
+    command:
+      - --api.dashboard=true
+
+      - --providers.file=true
+      - --providers.file.directory=/traefik/config
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik:/traefik"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN:-achieve.localhost}`)"
+    environment:
+      DOMAIN: ${DOMAIN:-achieve.localhost}
+
+  db:
+    image: postgres:13
+    restart: unless-stopped
+    healthcheck:
+      test: "pg_isready -q -d db -U ${DB_USERNAME}"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+
+  achiever:
+    build:
+      context: ./achiever
+      target: prod
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.achiever.tls=true"
+      - "traefik.http.routers.achiever.rule=Host(`api.${DOMAIN:-achieve.localhost}`)"
+    environment:
+      DATABASE_URL: "postgresql://${DB_USERNAME}:${DB_PASSWORD}@db/db"
+
+volumes:
+  db_data:
+

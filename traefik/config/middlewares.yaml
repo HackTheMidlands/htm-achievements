@@ -1,0 +1,8 @@
+http:
+  middlewares:
+    cors:
+      headers:
+        accessControlAllowHeaders: "*"
+        accessControlAllowMethods: "*"
+        accessControlAllowOriginListRegex: "https://([^.]+\\.)?{{ env "DOMAIN" | default "achieve.localhost" }}(.*)"
+
