@@ -1,5 +1,5 @@
 ifeq ($(INFRA), dev)
-FILES=-f docker-compose.yaml -f dev.docker-compose.yaml
+FILES=-f docker-compose.yaml -f docker-compose.dev.yaml
 else
 FILES=-f docker-compose.yaml
 endif

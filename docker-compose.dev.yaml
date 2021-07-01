@@ -1,10 +1,9 @@
 version: '3'
 
 services:
-  achiever:
+  api:
     build:
-      context: ./achiever
+      context: ./api
       target: dev
     volumes:
-      - "./achiever/app:/app/app"
-
+      - "./api/app:/app/app"

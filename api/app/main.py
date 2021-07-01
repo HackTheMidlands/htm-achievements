@@ -1,15 +1,32 @@
 import uuid
 from typing import List, Tuple, Union
 
-from fastapi import Depends, FastAPI, HTTPException
+from authlib.integrations.starlette_client import OAuth
+from fastapi import Depends, FastAPI, HTTPException, Request
 from sqlalchemy.orm import Session
+from starlette.middleware.sessions import SessionMiddleware
 
-from . import models, schemas
+from . import config, models, schemas
 from .db import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key="secret-string")
+
+oauth = OAuth()
+oauth.register(
+    name="discord",
+    api_base_url="https://discord.com/api/",
+    access_token_url="https://discord.com/api/oauth2/token",
+    authorize_url="https://discord.com/api/oauth2/authorize",
+    client_id=config.OauthClientID,
+    client_secret=config.OauthClientSecret,
+    client_kwargs={
+        "token_endpoint_auth_method": "client_secret_post",
+        "scope": "identify email",
+    },
+)
 
 
 ALLOWED_LIMITS = (25, 50, 75, 100)
@@ -57,10 +74,42 @@ def get_user_achievements(
     return user.achievements.limit(limit).offset(offset).all()
 
 
+@app.get("/login")
+async def login(request: Request):
+    redirect_uri = request.url_for("auth")
+    return await oauth.discord.authorize_redirect(request, redirect_uri)
+
+
+@app.get("/auth", response_model=schemas.Token)
+async def auth(request: Request, db: Session = Depends(get_db)):
+    token = await oauth.discord.authorize_access_token(request)
+    resp = await oauth.discord.get("oauth2/@me", token=token)
+    data = resp.json()
+    if "user" in data:
+        user = data["user"]
+    else:
+        raise HTTPException(status_code=500, detail="Authorization failed")
+
+    username = f"{user['username']}#{user['discriminator']}"
+
+    db_user = get_user(db, username)
+    if not db_user:
+        db_user = models.User(username=username)
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+
+    db_token = models.Token(owner=db_user)
+    db.add(db_token)
+    db.commit()
+    db.refresh(db_token)
+
+    return db_token
+
+
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = get_user(db, user.username)
-    print(user)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
 
@@ -82,19 +131,6 @@ def read_user(username: Union[uuid.UUID, str], db: Session = Depends(get_db)):
     db_user = get_user(db, username)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-    return db_user
-
-
-@app.put("/users/{username}/verify", response_model=schemas.User)
-def verify_user(username: Union[uuid.UUID, str], db: Session = Depends(get_db)):
-    db_user = get_user(db, username)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    if db_user.verified:
-        raise HTTPException(status_code=400, detail="User already verified")
-    db_user.verified = True
-    db.add(db_user)
-    db.commit()
     return db_user
 
 

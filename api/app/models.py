@@ -1,5 +1,5 @@
 import uuid
-from typing import Any
+from typing import Any, List
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -20,11 +20,23 @@ class User(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     username = Column(String, unique=True, index=True)
-    verified = Column(Boolean, default=False)
 
+    tokens: List[Token] = relationship("Token", back_populates="owner", uselist=True)
     achievements: Query = relationship(
         "Achievement", back_populates="owner", lazy="dynamic"
     )
+
+
+class Token(Base):
+    __tablename__ = "tokens"
+
+    id: uuid.UUID = Column(
+        UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4
+    )
+    created_at = Column(DateTime, server_default=func.now())
+
+    owner_id: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+    owner: User = relationship("User", back_populates="tokens", uselist=False)
 
 
 class Achievement(Base):

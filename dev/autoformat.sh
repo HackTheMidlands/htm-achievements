@@ -6,6 +6,6 @@ isort \
     --force-grid-wrap=0 \
     --use-parentheses \
     --line-width=88 \
-    achiever/app/
+    api/app/
 
-black achiever/app/
+black api/app/

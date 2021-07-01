@@ -22,6 +22,14 @@ class Achievement(AchievementBase):
         orm_mode = True
 
 
+class Token(BaseModel):
+    id: uuid.UUID
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
 class UserBase(BaseModel):
     username: str
 
@@ -32,8 +40,6 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: uuid.UUID
-    verified: bool
-    achievements: List[Achievement]
 
     class Config:
         orm_mode = True

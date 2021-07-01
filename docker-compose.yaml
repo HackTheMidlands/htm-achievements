@@ -43,9 +43,9 @@ services:
       POSTGRES_USER: "${DB_USERNAME}"
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
 
-  achiever:
+  api:
     build:
-      context: ./achiever
+      context: ./api
       target: prod
     restart: unless-stopped
     depends_on:
@@ -53,9 +53,11 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.achiever.tls=true"
-      - "traefik.http.routers.achiever.rule=Host(`api.${DOMAIN:-achieve.localhost}`)"
+      - "traefik.http.routers.api.tls=true"
+      - "traefik.http.routers.api.rule=Host(`api.${DOMAIN:-achieve.localhost}`)"
     environment:
+      OAUTH_CLIENT_ID: "${OAUTH_CLIENT_ID}"
+      OAUTH_CLIENT_SECRET: "${OAUTH_CLIENT_SECRET}"
       DATABASE_URL: "postgresql://${DB_USERNAME}:${DB_PASSWORD}@db/db"
 
 volumes:

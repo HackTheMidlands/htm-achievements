@@ -11,9 +11,9 @@ isort --check \
     --force-grid-wrap=0 \
     --use-parentheses \
     --line-width=88 \
-    achiever/app/
+    api/app/
 
-black --check achiever/app/
+black --check api/app/
 
 # type checking
-(cd achiever; mypy app)
+(cd api; mypy app)
