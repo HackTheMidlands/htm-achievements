@@ -1,18 +1,28 @@
 import uuid
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from authlib.integrations.starlette_client import OAuth
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
-from . import config, models, schemas
+from . import config, crud, models, schemas
 from .db import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="secret-string")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
 
 oauth = OAuth()
 oauth.register(
@@ -24,7 +34,8 @@ oauth.register(
     client_secret=config.OauthClientSecret,
     client_kwargs={
         "token_endpoint_auth_method": "client_secret_post",
-        "scope": "identify email",
+        "scope": config.OauthClientScopes,
+        "prompt": "none",
     },
 )
 
@@ -48,39 +59,41 @@ def get_db():
         db.close()
 
 
-def get_user(db: Session, username: Union[uuid.UUID, str]):
-    if isinstance(username, uuid.UUID):
-        f = models.User.id == username
-    else:
-        f = models.User.username == username
-    user = db.query(models.User).filter(f).first()
-    return user
-
-
-def get_users(db: Session, limit_offset: Tuple[int, int]):
-    limit, offset = limit_offset
-    users = db.query(models.User).offset(offset).limit(limit).all()
-    return users
-
-
-def get_user_achievement(db: Session, user: models.User, achievement: uuid.UUID):
-    return user.achievements.filter_by(id=achievement).first()
-
-
-def get_user_achievements(
-    db: Session, user: models.User, limit_offset: Tuple[int, int]
+def get_token(
+    token: Optional[Union[uuid.UUID, str]] = Cookie(None),
+    x_token: Optional[Union[uuid.UUID, str]] = Header(None),
+    db: Session = Depends(get_db),
 ):
-    limit, offset = limit_offset
-    return user.achievements.limit(limit).offset(offset).all()
+    token = token or x_token
+    if token is None:
+        raise HTTPException(status_code=401, detail="Authentication token not provided")
+    if not isinstance(token, uuid.UUID):
+        raise HTTPException(
+            status_code=401, detail="Authentication token not valid UUID"
+        )
+
+    db_token = crud.get_token(db, token)
+    if not db_token:
+        raise HTTPException(status_code=401, detail="Authentication token invalid")
+
+    return db_token
 
 
-@app.get("/login")
+def get_token_admin(token: models.Token = Depends(get_token)):
+    if not token.admin:
+        raise HTTPException(
+            status_code=403, detail="Authentication token has insufficient permissions"
+        )
+    return token
+
+
+@app.get("/login", tags=["authentication"])
 async def login(request: Request):
     redirect_uri = request.url_for("auth")
     return await oauth.discord.authorize_redirect(request, redirect_uri)
 
 
-@app.get("/auth", response_model=schemas.Token)
+@app.get("/auth", response_model=schemas.Token, tags=["authentication"])
 async def auth(request: Request, db: Session = Depends(get_db)):
     token = await oauth.discord.authorize_access_token(request)
     resp = await oauth.discord.get("oauth2/@me", token=token)
@@ -92,24 +105,30 @@ async def auth(request: Request, db: Session = Depends(get_db)):
 
     username = f"{user['username']}#{user['discriminator']}"
 
-    db_user = get_user(db, username)
+    db_user = crud.get_user(db, username)
     if not db_user:
         db_user = models.User(username=username)
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
 
-    db_token = models.Token(owner=db_user)
+    db_token = models.Token(owner=db_user, admin=username in config.AdminList)
     db.add(db_token)
     db.commit()
     db.refresh(db_token)
 
-    return db_token
+    response = RedirectResponse("/docs")
+    response.set_cookie(key="token", value=str(db_token.id), max_age=7 * 24 * 60 * 60)
+    return response
 
 
-@app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = get_user(db, user.username)
+@app.post("/users/", response_model=schemas.User, tags=["users"])
+def create_user(
+    user: schemas.UserCreate,
+    db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
+):
+    db_user = crud.get_user(db, user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
 
@@ -120,36 +139,59 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return db_user
 
 
-@app.get("/users/", response_model=List[schemas.User])
-def read_users(offset: int = 0, limit: int = 25, db: Session = Depends(get_db)):
+@app.get("/users/", response_model=List[schemas.User], tags=["users"])
+def read_users(
+    offset: int = 0,
+    limit: int = 25,
+    db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
+):
     check_limit(limit)
-    return get_users(db, (limit, offset))
+    return crud.get_users(db, (limit, offset))
 
 
-@app.get("/users/{username}", response_model=schemas.User)
-def read_user(username: Union[uuid.UUID, str], db: Session = Depends(get_db)):
-    db_user = get_user(db, username)
+@app.get("/users/@me", response_model=schemas.User, tags=["users"])
+def read_me(token: models.Token = Depends(get_token)):
+    return token.owner
+
+
+@app.get("/users/{username}", response_model=schemas.User, tags=["users"])
+def read_user(
+    username: Union[uuid.UUID, str],
+    db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
+):
+    db_user = crud.get_user(db, username)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
 
-@app.delete("/users/{username}")
-def delete_user(username: Union[uuid.UUID, str], db: Session = Depends(get_db)):
-    db_user = get_user(db, username)
+@app.delete("/users/{username}", tags=["users"])
+def delete_user(
+    username: Union[uuid.UUID, str],
+    db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
+):
+    db_user = crud.get_user(db, username)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     db.delete(db_user)
     db.commit()
 
 
-@app.post("/users/{username}/achievements", response_model=schemas.Achievement)
+@app.post(
+    "/users/{username}/achievements",
+    response_model=schemas.Achievement,
+    tags=["achievements"],
+)
 def create_achievement(
     username: Union[uuid.UUID, str],
     achievement: schemas.AchievementCreate,
     db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
 ):
-    db_user = get_user(db, username)
+    db_user = crud.get_user(db, username)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -164,34 +206,74 @@ def create_achievement(
     return db_achievement
 
 
-@app.get("/users/{username}/achievements", response_model=List[schemas.Achievement])
+@app.get(
+    "/users/@me/achievements",
+    response_model=List[schemas.Achievement],
+    tags=["achievements"],
+)
+def read_my_achievements(
+    offset: int = 0,
+    limit: int = 25,
+    db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token),
+):
+    check_limit(limit)
+
+    return crud.get_user_achievements(db, token.owner, (limit, offset))
+
+
+@app.get(
+    "/users/{username}/achievements",
+    response_model=List[schemas.Achievement],
+    tags=["achievements"],
+)
 def read_user_achievements(
     username: Union[uuid.UUID, str],
     offset: int = 0,
     limit: int = 25,
     db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
 ):
     check_limit(limit)
 
-    db_user = get_user(db, username)
+    db_user = crud.get_user(db, username)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-    return get_user_achievements(db, db_user, (limit, offset))
+    return crud.get_user_achievements(db, db_user, (limit, offset))
 
 
 @app.get(
-    "/users/{username}/achievements/{achievement}", response_model=schemas.Achievement
+    "/users/@me/achievements/{achievement}",
+    response_model=schemas.Achievement,
+    tags=["achievements"],
+)
+def read_my_achievement(
+    achievement: uuid.UUID,
+    db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token),
+):
+    db_achievement = crud.get_user_achievement(db, token.owner, achievement)
+    if not db_achievement:
+        raise HTTPException(status_code=404, detail="Achievement not found")
+    return db_achievement
+
+
+@app.get(
+    "/users/{username}/achievements/{achievement}",
+    response_model=schemas.Achievement,
+    tags=["achievements"],
 )
 def read_user_achievement(
     username: Union[uuid.UUID, str],
     achievement: uuid.UUID,
     db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
 ):
-    db_user = get_user(db, username)
+    db_user = crud.get_user(db, username)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    db_achievement = get_user_achievement(db, db_user, achievement)
+    db_achievement = crud.get_user_achievement(db, db_user, achievement)
     if not db_achievement:
         raise HTTPException(status_code=404, detail="Achievement not found")
     return db_achievement

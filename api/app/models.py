@@ -21,7 +21,7 @@ class User(Base):
 
     username = Column(String, unique=True, index=True)
 
-    tokens: List[Token] = relationship("Token", back_populates="owner", uselist=True)
+    tokens: List["Token"] = relationship("Token", back_populates="owner", uselist=True)
     achievements: Query = relationship(
         "Achievement", back_populates="owner", lazy="dynamic"
     )
@@ -34,6 +34,8 @@ class Token(Base):
         UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4
     )
     created_at = Column(DateTime, server_default=func.now())
+
+    admin = Column(Boolean, default=False)
 
     owner_id: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     owner: User = relationship("User", back_populates="tokens", uselist=False)
