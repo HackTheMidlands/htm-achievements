@@ -1,11 +1,11 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8 as prod
 
-COPY ./requirements.txt /app/requirements.txt
-RUN pip install -r /app/requirements.txt
+COPY ./setup.cfg ./pyproject.toml /app/
+RUN pip install .
 
 COPY ./ /app/
+RUN pip install .
 
 FROM prod as dev
 
 CMD /start-reload.sh
-
