@@ -49,7 +49,7 @@ class Achievement(Base):
     )
 
     name = Column(String)
-    attributes: Any = Column(MutableDict.as_mutable(JSONB))
+    tags: Any = Column(MutableDict.as_mutable(JSONB))
     timestamp = Column(DateTime, server_default=func.now())
 
     owner_id: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey("users.id"))

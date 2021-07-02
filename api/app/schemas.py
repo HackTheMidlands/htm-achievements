@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 class AchievementBase(BaseModel):
     name: str
-    attributes: Dict[str, Any]
+    tags: Dict[str, Any]
 
 
 class AchievementCreate(AchievementBase):

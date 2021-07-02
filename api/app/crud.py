@@ -26,8 +26,14 @@ def get_users(db: Session, limit_offset: Tuple[int, int]):
     return users
 
 
-def get_user_achievement(db: Session, user: models.User, achievement: uuid.UUID):
-    return user.achievements.filter_by(id=achievement).first()
+def get_user_achievement(
+    db: Session, user: models.User, achievement: Union[uuid.UUID, str]
+):
+    if isinstance(achievement, uuid.UUID):
+        f = models.Achievement.id == achievement
+    else:
+        f = models.Achievement.name == achievement
+    return user.achievements.filter(f).first()
 
 
 def get_user_achievements(

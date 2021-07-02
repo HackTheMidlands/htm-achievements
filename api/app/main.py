@@ -195,9 +195,13 @@ def create_achievement(
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
 
+    db_achievement = crud.get_user_achievement(db, token.owner, achievement.name)
+    if db_achievement:
+        db.delete(db_achievement)
+
     db_achievement = models.Achievement(
         name=achievement.name,
-        attributes=achievement.attributes,
+        tags=achievement.tags,
         owner=db_user,
     )
     db.add(db_achievement)
@@ -248,7 +252,7 @@ def read_user_achievements(
     tags=["achievements"],
 )
 def read_my_achievement(
-    achievement: uuid.UUID,
+    achievement: Union[uuid.UUID, str],
     db: Session = Depends(get_db),
     token: models.Token = Depends(get_token),
 ):
@@ -265,7 +269,7 @@ def read_my_achievement(
 )
 def read_user_achievement(
     username: Union[uuid.UUID, str],
-    achievement: uuid.UUID,
+    achievement: Union[uuid.UUID, str],
     db: Session = Depends(get_db),
     token: models.Token = Depends(get_token_admin),
 ):
@@ -278,6 +282,7 @@ def read_user_achievement(
         raise HTTPException(status_code=404, detail="Achievement not found")
     return db_achievement
 
+
 @app.delete(
     "/users/{username}/achievements/{achievement}",
     response_model=schemas.Achievement,
@@ -285,7 +290,7 @@ def read_user_achievement(
 )
 def delete_user_achievement(
     username: Union[uuid.UUID, str],
-    achievement: uuid.UUID,
+    achievement: Union[uuid.UUID, str],
     db: Session = Depends(get_db),
     token: models.Token = Depends(get_token_admin),
 ):
