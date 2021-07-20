@@ -38,7 +38,11 @@ export function UserShow(props) {
           target="owner_id"
           label="Achievements"
         >
-          <Datagrid rowClick={(id, basePath, record) => `${basePath}/${record.owner_id},${record.id}/show`}>
+          <Datagrid
+            rowClick={(id, basePath, record) =>
+              `${basePath}/${record.owner_id},${record.id}/show`
+            }
+          >
             <IDField source="id" />
             <ChipField source="name" />
             <DateField source="timestamp" showTime />

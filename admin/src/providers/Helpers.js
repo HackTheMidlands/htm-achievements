@@ -5,13 +5,6 @@ export async function fetchOne(endpoint) {
   return { data };
 }
 
-export async function fetchMany(endpoints) {
-  const data = await Promise.all(
-    endpoints.map(async (endpoint) => (await fetchOne(endpoint)).data)
-  );
-  return { data, total: data.length };
-}
-
 export async function fetchList(
   endpoint,
   page = undefined,
@@ -19,10 +12,7 @@ export async function fetchList(
 ) {
   let query = new URLSearchParams();
   if (page !== undefined && perPage !== undefined) {
-    query.append(
-      "offset",
-      (page - 1) * perPage
-    );
+    query.append("offset", (page - 1) * perPage);
     query.append("limit", perPage);
   }
 

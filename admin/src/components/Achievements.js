@@ -34,7 +34,7 @@ export function AchievementList(props) {
 
 export function AchievementShow(props) {
   return (
-    <Show title={<IDTitle name="Achievement"/>} {...props}>
+    <Show title={<IDTitle name="Achievement" />} {...props}>
       <SimpleShowLayout>
         <IDField source="id" />
         <ChipField source="name" />
