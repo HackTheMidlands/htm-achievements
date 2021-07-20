@@ -1,5 +1,6 @@
 import uuid
 from typing import List, Optional, Tuple, Union
+from pydantic import HttpUrl
 
 from authlib.integrations.starlette_client import OAuth
 from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Request
@@ -15,14 +16,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="secret-string")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
 
 oauth = OAuth()
 oauth.register(
@@ -40,14 +33,14 @@ oauth.register(
 )
 
 
-ALLOWED_LIMITS = (25, 50, 75, 100)
+MAX_LIMIT = 100
 
 
 def check_limit(limit: int):
-    if limit not in ALLOWED_LIMITS:
+    if limit > MAX_LIMIT:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid limit: allowed limits are {ALLOWED_LIMITS}",
+            detail=f"Invalid limit: max limit is {MAX_LIMIT}",
         )
 
 
@@ -88,7 +81,11 @@ def get_token_admin(token: models.Token = Depends(get_token)):
 
 
 @app.get("/login", tags=["authentication"])
-async def login(request: Request):
+async def login(redirect: HttpUrl, request: Request):
+    if not redirect.host.endswith("." + config.Domain):
+        raise HTTPException(status_code=404, detail="Invalid redirect url")
+
+    request.session["redirect"] = redirect
     redirect_uri = request.url_for("auth")
     return await oauth.discord.authorize_redirect(request, redirect_uri)
 
@@ -116,9 +113,9 @@ async def auth(request: Request, db: Session = Depends(get_db)):
     db.add(db_token)
     db.commit()
     db.refresh(db_token)
-
-    response = RedirectResponse("/docs")
-    response.set_cookie(key="token", value=str(db_token.id), max_age=7 * 24 * 60 * 60)
+    
+    response = RedirectResponse(request.session["redirect"])
+    response.set_cookie(key="token", value=str(db_token.id), max_age=7 * 24 * 60 * 60, domain="." + config.Domain)
     return response
 
 

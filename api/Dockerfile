@@ -1,5 +1,7 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8 as prod
 
+ENV FORWARDED_ALLOW_IPS="*"
+
 COPY ./setup.cfg ./pyproject.toml /app/
 RUN pip install .
 

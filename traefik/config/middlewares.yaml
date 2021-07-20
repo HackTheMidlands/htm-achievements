@@ -4,5 +4,5 @@ http:
       headers:
         accessControlAllowHeaders: "*"
         accessControlAllowMethods: "*"
-        accessControlAllowOriginListRegex: "https://([^.]+\\.)?{{ env "DOMAIN" | default "achieve.localhost" }}(.*)"
-
+        accessControlAllowCredentials: "true"
+        accessControlAllowOriginListRegex: 'https?://([^.]+\.)?achieve.localhost(/.*)?'

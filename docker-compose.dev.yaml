@@ -1,6 +1,14 @@
 version: '3'
 
 services:
+  admin:
+    build:
+      context: ./admin
+      target: dev
+    volumes:
+      - "./admin/src:/app/src"
+      - "./admin/public:/app/public"
+  
   api:
     build:
       context: ./api
