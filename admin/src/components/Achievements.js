@@ -13,8 +13,42 @@ import {
   ReferenceInput,
   TextInput,
 } from "react-admin";
+import { JsonField, JsonInput } from "react-admin-json-view";
 
 import { IDTitle, IDField } from "./utils/id.js";
+
+function TagsField({ source, ...props }) {
+  return (
+    <JsonField
+      source={source}
+      addLabel={true}
+      reactJsonOptions={{
+        name: null,
+        collapsed: false,
+        enableClipboard: false,
+        displayDataTypes: false,
+      }}
+      {...props}
+    />
+  );
+}
+
+
+function TagsInput({ source, ...props }) {
+  return (
+    <JsonInput
+      source={source}
+      addLabel={true}
+      reactJsonOptions={{
+        name: null,
+        collapsed: false,
+        enableClipboard: false,
+        displayDataTypes: false,
+      }}
+      {...props}
+    />
+  );
+}
 
 export function AchievementList(props) {
   return (
@@ -26,7 +60,7 @@ export function AchievementList(props) {
           <TextField source="username" />
         </ReferenceField>
         <DateField source="timestamp" showTime />
-        <TextField source="tags" />
+        <TagsField source="tags" />
       </Datagrid>
     </List>
   );
@@ -42,7 +76,7 @@ export function AchievementShow(props) {
           <TextField source="username" />
         </ReferenceField>
         <DateField source="timestamp" showTime />
-        <TextField source="tags" />
+        <TagsField source="tags" />
       </SimpleShowLayout>
     </Show>
   );
@@ -55,7 +89,7 @@ export const AchievementCreate = (props) => (
         <SelectInput optionText="username" />
       </ReferenceInput>
       <TextInput source="name" />
-      <TextInput source="tags" />
+      <TagsInput source="tags" />
     </SimpleForm>
   </Create>
 );
