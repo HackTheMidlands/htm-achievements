@@ -1,4 +1,4 @@
-import { Admin, Resource, ListGuesser, Login } from "react-admin";
+import { Admin, Resource, ListGuesser } from "react-admin";
 
 import LoginPage from "./pages/LoginPage";
 import * as CoreDataProvider from "./CoreDataProvider";
