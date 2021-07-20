@@ -3,7 +3,7 @@ import { API, APIError } from "./API";
 
 export async function login() {
   try {
-    await API("users/@me");
+    await API("GET", "users/@me");
   } catch (err) {
     if (err instanceof APIError && err.status === 401) {
       window.location.assign(`${API_URL}/login?redirect=${ADMIN_URL}`);
@@ -18,7 +18,7 @@ export async function checkError(error) {
   }
 }
 export async function checkAuth() {
-  await API("users/@me");
+  await API("GET", "users/@me");
 }
 export async function logout() {
   // clear cookie

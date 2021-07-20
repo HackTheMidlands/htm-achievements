@@ -2,7 +2,7 @@ http:
   middlewares:
     cors:
       headers:
-        accessControlAllowHeaders: "*"
-        accessControlAllowMethods: "*"
+        accessControlAllowHeaders: "X-Token"
+        accessControlAllowMethods: "OPTIONS,GET,POST,PUT,PATCH,DELETE"
         accessControlAllowCredentials: "true"
         accessControlAllowOriginListRegex: 'https?://([^.]+\.)?achieve.localhost(/.*)?'

@@ -1,11 +1,11 @@
 import uuid
 from typing import List, Optional, Tuple, Union
-from pydantic import HttpUrl
 
 from authlib.integrations.starlette_client import OAuth
 from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from pydantic import HttpUrl
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -113,9 +113,14 @@ async def auth(request: Request, db: Session = Depends(get_db)):
     db.add(db_token)
     db.commit()
     db.refresh(db_token)
-    
+
     response = RedirectResponse(request.session["redirect"])
-    response.set_cookie(key="token", value=str(db_token.id), max_age=7 * 24 * 60 * 60, domain="." + config.Domain)
+    response.set_cookie(
+        key="token",
+        value=str(db_token.id),
+        max_age=7 * 24 * 60 * 60,
+        domain="." + config.Domain,
+    )
     return response
 
 
@@ -175,6 +180,33 @@ def delete_user(
         raise HTTPException(status_code=404, detail="User not found")
     db.delete(db_user)
     db.commit()
+
+
+@app.get(
+    "/achievements/", response_model=List[schemas.Achievement], tags=["achievements"]
+)
+def read_achievements(
+    offset: int = 0,
+    limit: int = 25,
+    db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
+):
+    check_limit(limit)
+    return crud.get_achievements(db, (limit, offset))
+
+
+@app.get(
+    "/achievements/{id}", response_model=schemas.Achievement, tags=["achievements"]
+)
+def read_achievement(
+    id: uuid.UUID,
+    db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
+):
+    db_achieve = crud.get_achievement(db, id)
+    if not db_achieve:
+        raise HTTPException(status_code=404, detail="Achievement not found")
+    return db_achieve
 
 
 @app.post(

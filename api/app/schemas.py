@@ -16,6 +16,8 @@ class AchievementCreate(AchievementBase):
 
 class Achievement(AchievementBase):
     id: uuid.UUID
+    owner_id: uuid.UUID
+
     timestamp: datetime
 
     class Config:
