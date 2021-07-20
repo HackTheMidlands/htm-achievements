@@ -1,7 +1,7 @@
 import { Admin, Resource } from "react-admin";
 
 import LoginPage from "./pages/LoginPage";
-import * as CoreDataProvider from "./CoreDataProvider";
+import * as DataProvider from "./providers/DataProvider";
 import * as AuthProvider from "./AuthProvider";
 
 import * as Users from "./components/Users";
@@ -9,7 +9,7 @@ import * as Achievements from "./components/Achievements";
 
 const App = () => (
   <Admin
-    dataProvider={CoreDataProvider}
+    dataProvider={DataProvider}
     authProvider={AuthProvider}
     loginPage={LoginPage}
   >
@@ -24,6 +24,7 @@ const App = () => (
       name="achievements"
       show={Achievements.AchievementShow}
       list={Achievements.AchievementList}
+      create={Achievements.AchievementCreate}
     />
   </Admin>
 );

@@ -14,12 +14,14 @@ import {
   required,
 } from "react-admin";
 
+import { IDTitle, IDField } from "./utils/id.js";
+
 export function UserList(props) {
   return (
     <List {...props}>
       <Datagrid rowClick="show">
         <TextField source="username" />
-        <TextField source="id" />
+        <IDField source="id" />
       </Datagrid>
     </List>
   );
@@ -27,17 +29,17 @@ export function UserList(props) {
 
 export function UserShow(props) {
   return (
-    <Show {...props}>
+    <Show title={<IDTitle name="User" />} {...props}>
       <SimpleShowLayout>
-        <TextField source="id" />
+        <IDField source="id" />
         <TextField source="username" />
         <ReferenceManyField
           reference="achievements"
-          target="users"
+          target="owner_id"
           label="Achievements"
         >
-          <Datagrid rowClick="show">
-            <TextField source="id" />
+          <Datagrid rowClick={(id, basePath, record) => `${basePath}/${record.owner_id},${record.id}/show`}>
+            <IDField source="id" />
             <ChipField source="name" />
             <DateField source="timestamp" showTime />
             <TextField source="tags" />
@@ -59,7 +61,7 @@ export const UserCreate = (props) => (
 export const UserEdit = (props) => (
   <Edit {...props}>
     <SimpleForm>
-      <TextInput disabled source="id" />
+      <IDField disabled source="id" />
       <TextInput source="username" validate={required()} />
     </SimpleForm>
   </Edit>

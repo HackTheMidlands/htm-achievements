@@ -1,5 +1,6 @@
 import {
   List,
+  SelectInput,
   Datagrid,
   TextField,
   Show,
@@ -7,13 +8,19 @@ import {
   ChipField,
   DateField,
   ReferenceField,
+  Create,
+  SimpleForm,
+  ReferenceInput,
+  TextInput,
 } from "react-admin";
+
+import { IDTitle, IDField } from "./utils/id.js";
 
 export function AchievementList(props) {
   return (
     <List {...props}>
       <Datagrid rowClick="show">
-        <TextField source="id" />
+        <IDField source="id" />
         <ChipField source="name" />
         <ReferenceField source="owner_id" reference="users">
           <TextField source="username" />
@@ -27,9 +34,9 @@ export function AchievementList(props) {
 
 export function AchievementShow(props) {
   return (
-    <Show {...props}>
+    <Show title={<IDTitle name="Achievement"/>} {...props}>
       <SimpleShowLayout>
-        <TextField source="id" />
+        <IDField source="id" />
         <ChipField source="name" />
         <ReferenceField source="owner_id" reference="users">
           <TextField source="username" />
@@ -40,3 +47,15 @@ export function AchievementShow(props) {
     </Show>
   );
 }
+
+export const AchievementCreate = (props) => (
+  <Create {...props}>
+    <SimpleForm>
+      <ReferenceInput source="user" reference="users">
+        <SelectInput optionText="username" />
+      </ReferenceInput>
+      <TextInput source="name" />
+      <TextInput source="tags" />
+    </SimpleForm>
+  </Create>
+);
