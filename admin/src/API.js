@@ -27,5 +27,5 @@ export async function API(method, url, data = undefined) {
     }
   }
 
-  return body;
+  return { resp, data: body };
 }

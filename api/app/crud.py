@@ -26,6 +26,10 @@ def get_users(db: Session, limit_offset: Tuple[int, int]):
     return users
 
 
+def count_users(db: Session) -> int:
+    return db.query(models.User).count()
+
+
 def get_achievement(db: Session, id: uuid.UUID):
     achieve = db.query(models.Achievement).filter_by(id=id).first()
     return achieve
@@ -35,6 +39,10 @@ def get_achievements(db: Session, limit_offset: Tuple[int, int]):
     limit, offset = limit_offset
     achieves = db.query(models.Achievement).offset(offset).limit(limit).all()
     return achieves
+
+
+def count_achievements(db: Session) -> int:
+    return db.query(models.Achievement).count()
 
 
 def get_user_achievement(
@@ -52,3 +60,7 @@ def get_user_achievements(
 ):
     limit, offset = limit_offset
     return user.achievements.limit(limit).offset(offset).all()
+
+
+def count_user_achievements(db: Session, user: models.User) -> int:
+    return user.achievements.count()

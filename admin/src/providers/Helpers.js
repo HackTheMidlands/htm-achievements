@@ -1,7 +1,7 @@
 import { API } from "../API";
 
 export async function fetchOne(endpoint) {
-  const data = await API("GET", endpoint);
+  const { data } = await API("GET", endpoint);
   return { data };
 }
 
@@ -18,19 +18,19 @@ export async function fetchList(
 
   const url = `${endpoint}?${query.toString()}`;
 
-  const data = await API("GET", url);
+  const { data, resp } = await API("GET", url);
   return {
     data,
-    total: data.length, // HACK
+    total: parseInt(resp.headers.get("X-Total-Count")) || data.length,
   };
 }
 
 export async function createOne(endpoint, data) {
-  const newData = await API("POST", endpoint, data);
-  return { data: newData };
+  const { data: ndata } = await API("POST", endpoint, data);
+  return { ndata };
 }
 
 export async function updateOne(endpoint, data) {
-  const newData = await API("PUT", endpoint, data);
-  return { data: newData };
+  const { data: ndata } = await API("PUT", endpoint, data);
+  return { ndata };
 }

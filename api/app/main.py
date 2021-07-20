@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple, Union
 from authlib.integrations.starlette_client import OAuth
 from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, Response
 from pydantic import HttpUrl
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
@@ -81,7 +81,7 @@ def get_token_admin(token: models.Token = Depends(get_token)):
 
 
 @app.get("/login", tags=["authentication"])
-async def login(redirect: HttpUrl, request: Request):
+async def login(request: Request, redirect: HttpUrl):
     if not redirect.host.endswith("." + config.Domain):
         raise HTTPException(status_code=404, detail="Invalid redirect url")
 
@@ -143,12 +143,14 @@ def create_user(
 
 @app.get("/users/", response_model=List[schemas.User], tags=["users"])
 def read_users(
+    response: Response,
     offset: int = 0,
     limit: int = 25,
     db: Session = Depends(get_db),
     token: models.Token = Depends(get_token_admin),
 ):
     check_limit(limit)
+    response.headers["X-Total-Count"] = str(crud.count_users(db))
     return crud.get_users(db, (limit, offset))
 
 
@@ -186,12 +188,14 @@ def delete_user(
     "/achievements/", response_model=List[schemas.Achievement], tags=["achievements"]
 )
 def read_achievements(
+    response: Response,
     offset: int = 0,
     limit: int = 25,
     db: Session = Depends(get_db),
     token: models.Token = Depends(get_token_admin),
 ):
     check_limit(limit)
+    response.headers["X-Total-Count"] = str(crud.count_achievements(db))
     return crud.get_achievements(db, (limit, offset))
 
 
@@ -245,13 +249,16 @@ def create_achievement(
     tags=["achievements"],
 )
 def read_my_achievements(
+    response: Response,
     offset: int = 0,
     limit: int = 25,
     db: Session = Depends(get_db),
     token: models.Token = Depends(get_token),
 ):
     check_limit(limit)
-
+    response.headers["X-Total-Count"] = str(
+        crud.count_user_achievements(db, token.owner)
+    )
     return crud.get_user_achievements(db, token.owner, (limit, offset))
 
 
@@ -261,6 +268,7 @@ def read_my_achievements(
     tags=["achievements"],
 )
 def read_user_achievements(
+    response: Response,
     username: Union[uuid.UUID, str],
     offset: int = 0,
     limit: int = 25,
@@ -272,6 +280,8 @@ def read_user_achievements(
     db_user = crud.get_user(db, username)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
+
+    response.headers["X-Total-Count"] = str(crud.count_user_achievements(db, db_user))
     return crud.get_user_achievements(db, db_user, (limit, offset))
 
 

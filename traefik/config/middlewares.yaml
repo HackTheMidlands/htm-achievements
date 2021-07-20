@@ -2,6 +2,7 @@ http:
   middlewares:
     cors:
       headers:
+        accessControlExposeHeaders: "X-Total-Count"
         accessControlAllowHeaders: "X-Token"
         accessControlAllowMethods: "OPTIONS,GET,POST,PUT,PATCH,DELETE"
         accessControlAllowCredentials: "true"

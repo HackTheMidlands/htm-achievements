@@ -33,7 +33,6 @@ function TagsField({ source, ...props }) {
   );
 }
 
-
 function TagsInput({ source, ...props }) {
   return (
     <JsonInput
