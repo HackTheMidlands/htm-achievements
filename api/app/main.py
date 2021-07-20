@@ -44,6 +44,11 @@ def check_limit(limit: int):
         )
 
 
+def check_redirect(redirect: HttpUrl):
+    if not redirect.host.endswith("." + config.Domain):
+        raise HTTPException(status_code=404, detail="Invalid redirect url")
+
+
 def get_db():
     db = SessionLocal()
     try:
@@ -82,8 +87,7 @@ def get_token_admin(token: models.Token = Depends(get_token)):
 
 @app.get("/login", tags=["authentication"])
 async def login(request: Request, redirect: HttpUrl):
-    if not redirect.host.endswith("." + config.Domain):
-        raise HTTPException(status_code=404, detail="Invalid redirect url")
+    check_redirect(redirect)
 
     request.session["redirect"] = redirect
     redirect_uri = request.url_for("auth")
@@ -121,6 +125,15 @@ async def auth(request: Request, db: Session = Depends(get_db)):
         max_age=7 * 24 * 60 * 60,
         domain="." + config.Domain,
     )
+    return response
+
+
+@app.get("/logout", tags=["authentication"])
+async def logout(request: Request, redirect: HttpUrl):
+    check_redirect(redirect)
+
+    response = RedirectResponse(redirect)
+    response.delete_cookie(key="token", domain="." + config.Domain)
     return response
 
 

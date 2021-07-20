@@ -2,7 +2,7 @@ import { Admin, Resource } from "react-admin";
 
 import LoginPage from "./pages/LoginPage";
 import * as DataProvider from "./providers/DataProvider";
-import * as AuthProvider from "./AuthProvider";
+import * as AuthProvider from "./providers/AuthProvider";
 
 import * as Users from "./components/Users";
 import * as Achievements from "./components/Achievements";

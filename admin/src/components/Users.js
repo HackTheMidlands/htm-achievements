@@ -29,7 +29,7 @@ export function UserList(props) {
 
 export function UserShow(props) {
   return (
-    <Show title={<IDTitle name="User" />} {...props}>
+    <Show title={<UserTitle />} {...props}>
       <SimpleShowLayout>
         <IDField source="id" />
         <TextField source="username" />
@@ -70,3 +70,7 @@ export const UserEdit = (props) => (
     </SimpleForm>
   </Edit>
 );
+
+function UserTitle({ record }) {
+  return <span>User {record.username}</span>;
+}

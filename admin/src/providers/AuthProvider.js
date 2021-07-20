@@ -1,5 +1,5 @@
-import { API_URL, ADMIN_URL } from "./Config";
-import { API, APIError } from "./API";
+import { API_URL, ADMIN_URL } from "../Config";
+import { API, APIError } from "../API";
 
 export async function login() {
   try {
@@ -21,8 +21,11 @@ export async function checkAuth() {
   await API("GET", "users/@me");
 }
 export async function logout() {
-  // clear cookie
-  document.cookie = `token=; domain=achieve.localhost; Max-Age=0`;
+  if (
+    document.cookie.split(";").some((item) => item.trim().startsWith("token="))
+  ) {
+    window.location.assign(`${API_URL}/logout?redirect=${ADMIN_URL}`);
+  }
 }
 export async function getIdentity() {}
 export async function getPermissions() {}
