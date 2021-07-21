@@ -21,7 +21,6 @@ export default function LoginPage() {
   };
 
   const theme = useTheme();
-  console.log(theme);
 
   return (
     <ThemeProvider theme={theme}>

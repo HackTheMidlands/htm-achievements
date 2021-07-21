@@ -18,7 +18,8 @@ class Achievement(AchievementBase):
     id: uuid.UUID
     owner_id: uuid.UUID
 
-    timestamp: datetime
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True
@@ -33,7 +34,11 @@ class Token(BaseModel):
 
 
 class UserBase(BaseModel):
-    pass
+    discord_id: Optional[str]
+    discord_username: Optional[str]
+
+    twitter_id: Optional[str]
+    twitter_username: Optional[str]
 
 
 class UserCreate(UserBase):
@@ -42,12 +47,8 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: uuid.UUID
-
-    discord_id: Optional[str]
-    discord_username: Optional[str]
-
-    twitter_id: Optional[str]
-    twitter_username: Optional[str]
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True

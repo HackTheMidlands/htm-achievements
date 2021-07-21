@@ -1,5 +1,4 @@
 import {
-  Create,
   SimpleForm,
   TextInput,
   Edit,
@@ -11,10 +10,9 @@ import {
   ReferenceManyField,
   SimpleShowLayout,
   ChipField,
-  required,
 } from "react-admin";
 
-import { IDTitle, IDField } from "./utils/id.js";
+import { IDField } from "./utils/id.js";
 
 export function UserList(props) {
   return (

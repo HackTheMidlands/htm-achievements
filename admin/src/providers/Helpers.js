@@ -36,7 +36,7 @@ export async function updateOne(endpoint, data) {
 }
 
 export async function deleteOne(endpoint) {
-  let { data } = fetchOne(endpoint);
+  let { data } = await fetchOne(endpoint);
   await API("DELETE", endpoint);
   return { data };
 }

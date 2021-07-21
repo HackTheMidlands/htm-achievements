@@ -15,6 +15,5 @@ export default function useTheme() {
       }),
     [prefersDarkMode]
   );
-  console.log(theme);
   return theme;
 }

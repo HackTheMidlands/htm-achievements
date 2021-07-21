@@ -70,24 +70,41 @@ def get_db():
         db.close()
 
 
-def get_token(
-    token: Optional[Union[uuid.UUID, str]] = Cookie(None),
-    x_token: Optional[Union[uuid.UUID, str]] = Header(None),
-    db: Session = Depends(get_db),
-):
-    token = token or x_token
-    if token is None:
-        raise HTTPException(status_code=401, detail="Authentication token not provided")
-    if not isinstance(token, uuid.UUID):
-        raise HTTPException(
-            status_code=401, detail="Authentication token not valid UUID"
-        )
+def make_get_token(allow_invalid=False):
+    def get_token(
+        token: Optional[Union[uuid.UUID, str]] = Cookie(None),
+        x_token: Optional[Union[uuid.UUID, str]] = Header(None),
+        db: Session = Depends(get_db),
+    ):
+        token = token or x_token
+        if token is None:
+            if allow_invalid:
+                return None
+            raise HTTPException(
+                status_code=401, detail="Authentication token not provided"
+            )
+        if not isinstance(token, uuid.UUID):
+            if allow_invalid:
+                return None
 
-    db_token = crud.get_token(db, token)
-    if not db_token:
-        raise HTTPException(status_code=401, detail="Authentication token invalid")
+            raise HTTPException(
+                status_code=401, detail="Authentication token not valid UUID"
+            )
 
-    return db_token
+        db_token = crud.get_token(db, token)
+        if not db_token:
+            if allow_invalid:
+                return None
+
+            raise HTTPException(status_code=401, detail="Authentication token invalid")
+
+        return db_token
+
+    return get_token
+
+
+get_token = make_get_token()
+get_token_force = make_get_token(allow_invalid=True)
 
 
 def get_token_admin(token: models.Token = Depends(get_token)):
@@ -237,7 +254,7 @@ async def auth_twitter(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/logout", tags=["authentication"])
 async def logout(
-    request: Request, redirect: HttpUrl, token: models.Token = Depends(get_token)
+    request: Request, redirect: HttpUrl, token: models.Token = Depends(get_token_force)
 ):
     check_redirect(redirect)
 

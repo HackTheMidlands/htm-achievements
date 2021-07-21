@@ -52,10 +52,6 @@ function TagsInput({ source, ...props }) {
     />
   );
 }
-TagsInput.defaultProps = {
-  label: "Tags",
-  addLabel: true,
-};
 
 export function AchievementList(props) {
   return (
@@ -64,9 +60,9 @@ export function AchievementList(props) {
         <IDField source="id" />
         <ChipField source="name" />
         <ReferenceField source="owner_id" reference="users">
-          <TextField source="username" />
+          <FunctionField render={displayUsername} />
         </ReferenceField>
-        <DateField source="timestamp" showTime />
+        <DateField source="updated_at" showTime />
         <TagsField source="tags" />
       </Datagrid>
     </List>
@@ -82,7 +78,8 @@ export function AchievementShow(props) {
         <ReferenceField source="owner_id" reference="users" link="show">
           <FunctionField render={displayUsername} />
         </ReferenceField>
-        <DateField source="timestamp" showTime />
+        <DateField source="created_at" showTime />
+        <DateField source="updated_at" showTime />
         <TagsField source="tags" />
       </SimpleShowLayout>
     </Show>

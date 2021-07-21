@@ -6,8 +6,8 @@ const lookupTable = {
   achievements: Achievements,
 };
 function lookup(method) {
-  return function (resource, params) {
-    return lookupTable[resource][method](resource, params);
+  return async function (resource, params) {
+    return await lookupTable[resource][method](resource, params);
   };
 }
 

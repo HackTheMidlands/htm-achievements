@@ -25,9 +25,11 @@ class User(Base):
     twitter_id = Column(String, unique=True, index=True)
     twitter_username = Column(String, unique=True, index=True)
 
-    tokens: List["Token"] = relationship("Token", back_populates="owner", uselist=True)
+    tokens: List["Token"] = relationship(
+        "Token", back_populates="owner", uselist=True, cascade="all, delete"
+    )
     achievements: Query = relationship(
-        "Achievement", back_populates="owner", lazy="dynamic"
+        "Achievement", back_populates="owner", lazy="dynamic", cascade="all, delete"
     )
 
 
@@ -51,10 +53,11 @@ class Achievement(Base):
     id: uuid.UUID = Column(
         UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4
     )
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     name = Column(String)
     tags: Any = Column(MutableDict.as_mutable(JSONB))
-    timestamp = Column(DateTime, server_default=func.now())
 
     owner_id: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     owner: User = relationship("User", back_populates="achievements", uselist=False)
