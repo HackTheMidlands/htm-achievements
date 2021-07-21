@@ -10,7 +10,22 @@ def get_user(db: Session, username: Union[uuid.UUID, str]):
     if isinstance(username, uuid.UUID):
         f = models.User.id == username
     else:
-        f = models.User.username == username
+        try:
+            prefix, username = username.split(":")
+        except ValueError:
+            return None
+
+        if prefix == "discord":
+            f = (
+                models.User.discord_username == username
+                or models.User.discord_id == username
+            )
+        elif prefix == "twitter":
+            f = (
+                models.User.twitter_username == username
+                or models.User.twitter_id == username
+            )
+
     user = db.query(models.User).filter(f).first()
     return user
 

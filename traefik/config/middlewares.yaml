@@ -3,7 +3,7 @@ http:
     cors:
       headers:
         accessControlExposeHeaders: "X-Total-Count"
-        accessControlAllowHeaders: "X-Token"
+        accessControlAllowHeaders: "Content-Type,X-Token"
         accessControlAllowMethods: "OPTIONS,GET,POST,PUT,PATCH,DELETE"
         accessControlAllowCredentials: "true"
         accessControlAllowOriginListRegex: 'https?://([^.]+\.)?achieve.localhost(/.*)?'

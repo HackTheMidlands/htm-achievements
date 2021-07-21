@@ -1,6 +1,7 @@
 import uuid
 from typing import List, Optional, Tuple, Union
 
+import starlette
 from authlib.integrations.starlette_client import OAuth
 from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,12 +24,24 @@ oauth.register(
     api_base_url="https://discord.com/api/",
     access_token_url="https://discord.com/api/oauth2/token",
     authorize_url="https://discord.com/api/oauth2/authorize",
-    client_id=config.OauthClientID,
-    client_secret=config.OauthClientSecret,
+    client_id=config.DiscordOauthClientID,
+    client_secret=config.DiscordOauthClientSecret,
     client_kwargs={
         "token_endpoint_auth_method": "client_secret_post",
-        "scope": config.OauthClientScopes,
+        "scope": config.DiscordOauthClientScopes,
         "prompt": "none",
+    },
+)
+oauth.register(
+    name="twitter",
+    api_base_url="https://api.twitter.com/1.1/",
+    access_token_url="https://api.twitter.com/oauth/access_token",
+    request_token_url="https://api.twitter.com/oauth/request_token",
+    authorize_url="https://api.twitter.com/oauth/authenticate",
+    client_id=config.TwitterOauthClientID,
+    client_secret=config.TwitterOauthClientSecret,
+    client_kwargs={
+        "scope": config.TwitterOauthClientScopes,
     },
 )
 
@@ -85,17 +98,44 @@ def get_token_admin(token: models.Token = Depends(get_token)):
     return token
 
 
-@app.get("/login", tags=["authentication"])
-async def login(request: Request, redirect: HttpUrl):
+@app.get("/login/{provider}", tags=["authentication"])
+async def login(request: Request, provider: str, redirect: HttpUrl):
     check_redirect(redirect)
+    try:
+        redirect_uri = request.url_for(f"auth_{provider}")
+    except starlette.routing.NoMatchFound:
+        raise HTTPException(status_code=400, detail="Invalid auth provider")
+
+    if provider != "discord":
+        raise HTTPException(status_code=400, detail="Invalid auth provider")
+    actual_provider = oauth.create_client(provider)
 
     request.session["redirect"] = redirect
-    redirect_uri = request.url_for("auth")
-    return await oauth.discord.authorize_redirect(request, redirect_uri)
+    return await actual_provider.authorize_redirect(request, redirect_uri)
 
 
-@app.get("/auth", response_model=schemas.Token, tags=["authentication"])
-async def auth(request: Request, db: Session = Depends(get_db)):
+@app.get("/connect/{provider}", tags=["authentication"])
+async def connect(
+    request: Request,
+    provider: str,
+    redirect: HttpUrl,
+    token: models.Token = Depends(get_token),
+):
+    check_redirect(redirect)
+    try:
+        redirect_uri = request.url_for(f"auth_{provider}")
+    except starlette.routing.NoMatchFound:
+        raise HTTPException(status_code=400, detail="Invalid auth provider")
+
+    actual_provider = oauth.create_client(provider)
+
+    request.session["redirect"] = redirect
+    request.session["connect_user"] = str(token.owner.id)
+    return await actual_provider.authorize_redirect(request, redirect_uri)
+
+
+@app.get("/auth/discord", tags=["authentication"])
+async def auth_discord(request: Request, db: Session = Depends(get_db)):
     token = await oauth.discord.authorize_access_token(request)
     resp = await oauth.discord.get("oauth2/@me", token=token)
     data = resp.json()
@@ -104,32 +144,101 @@ async def auth(request: Request, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=500, detail="Authorization failed")
 
+    userid = user["id"]
     username = f"{user['username']}#{user['discriminator']}"
 
-    db_user = crud.get_user(db, username)
-    if not db_user:
-        db_user = models.User(username=username)
-        db.add(db_user)
+    if uid := request.session.get("connect_user"):
+        db_user = crud.get_user(db, uuid.UUID(uid))
+        db_user.discord_id = userid
+        db_user.discord_username = username
         db.commit()
-        db.refresh(db_user)
 
-    db_token = models.Token(owner=db_user, admin=username in config.AdminList)
-    db.add(db_token)
-    db.commit()
-    db.refresh(db_token)
+        request.session.pop("connect_user")
+        return RedirectResponse(request.session.pop("redirect"))
+    else:
+        db_user = crud.get_user(db, f"discord:{userid}")
+        if db_user:
+            db_user.discord_username = username
+        else:
+            db_user = models.User(discord_username=username, discord_id=userid)
+            db.add(db_user)
+            db.commit()
+            db.refresh(db_user)
 
-    response = RedirectResponse(request.session["redirect"])
-    response.set_cookie(
-        key="token",
-        value=str(db_token.id),
-        max_age=7 * 24 * 60 * 60,
-        domain="." + config.Domain,
+        db_token = models.Token(
+            owner=db_user,
+            admin=f"discord:{username}" in config.AdminList
+            or f"discord:{userid}" in config.AdminList,
+        )
+        db.add(db_token)
+        db.commit()
+        db.refresh(db_token)
+
+        response = RedirectResponse(request.session.pop("redirect"))
+        response.set_cookie(
+            key="token",
+            value=str(db_token.id),
+            max_age=7 * 24 * 60 * 60,
+            domain="." + config.Domain,
+        )
+        return response
+
+
+@app.get("/auth/twitter", tags=["authentication"])
+async def auth_twitter(request: Request, db: Session = Depends(get_db)):
+    token = await oauth.twitter.authorize_access_token(request)
+    resp = await oauth.twitter.get(
+        "account/verify_credentials.json", params={"skip_status": True}, token=token
     )
-    return response
+    if resp.status_code != 200:
+        raise HTTPException(status_code=500, detail="Authorization failed")
+    user = resp.json()
+
+    userid = user["id"]
+    username = user["screen_name"]
+
+    if uid := request.session.get("connect_user"):
+        db_user = crud.get_user(db, uuid.UUID(uid))
+        db_user.twitter_id = userid
+        db_user.twitter_username = username
+        db.commit()
+
+        request.session.pop("connect_user")
+        return RedirectResponse(request.session.pop("redirect"))
+    else:
+        db_user = crud.get_user(db, f"twitter:{userid}")
+        if db_user:
+            if db_user.twitter_username != username:
+                db_user.twitter_username = username
+        else:
+            db_user = models.User(twitter_username=username, twitter_id=userid)
+            db.add(db_user)
+            db.commit()
+            db.refresh(db_user)
+
+        db_token = models.Token(
+            owner=db_user,
+            admin=f"twitter:{username}" in config.AdminList
+            or f"twitter:{userid}" in config.AdminList,
+        )
+        db.add(db_token)
+        db.commit()
+        db.refresh(db_token)
+
+        response = RedirectResponse(request.session["redirect"])
+        response.set_cookie(
+            key="token",
+            value=str(db_token.id),
+            max_age=7 * 24 * 60 * 60,
+            domain="." + config.Domain,
+        )
+        return response
 
 
 @app.get("/logout", tags=["authentication"])
-async def logout(request: Request, redirect: HttpUrl):
+async def logout(
+    request: Request, redirect: HttpUrl, token: models.Token = Depends(get_token)
+):
     check_redirect(redirect)
 
     response = RedirectResponse(redirect)
@@ -143,11 +252,7 @@ def create_user(
     db: Session = Depends(get_db),
     token: models.Token = Depends(get_token_admin),
 ):
-    db_user = crud.get_user(db, user.username)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
-
-    db_user = models.User(username=user.username)
+    db_user = models.User()
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

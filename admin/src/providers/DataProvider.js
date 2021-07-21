@@ -11,10 +11,15 @@ function lookup(method) {
   };
 }
 
-export const getList = lookup("getList");
-export const getOne = lookup("getOne");
-export const getMany = lookup("getMany");
-export const getManyReference = lookup("getManyReference");
+const DataProvider = {
+  getList: lookup("getList"),
+  getOne: lookup("getOne"),
+  getMany: lookup("getMany"),
+  getManyReference: lookup("getManyReference"),
 
-export const create = lookup("create");
-export const update = lookup("update");
+  create: lookup("createOne"),
+  update: lookup("updateOne"),
+  delete: lookup("deleteOne"),
+  deleteMany: lookup("deleteMany"),
+};
+export default DataProvider;

@@ -16,10 +16,21 @@ export async function getMany(resource, { ids }) {
   };
 }
 
-export async function create(resource, { data }) {
+export async function createOne(resource, { data }) {
   return await Helpers.createOne("users/", data);
 }
 
-export async function update(resource, { id, data }) {
+export async function updateOne(resource, { id, data }) {
   return await Helpers.updateOne(`users/${id}`, data);
+}
+
+export async function deleteOne(resource, { id }) {
+  return await Helpers.deleteOne(`users/${id}`);
+}
+
+export async function deleteMany(resource, { ids }) {
+  await Promise.all(
+    ids.forEach(async (id) => await deleteOne(resource, { id }))
+  );
+  return { data: ids };
 }

@@ -2,7 +2,7 @@ import { Admin, Resource } from "react-admin";
 import Layout from "./Layout.js";
 
 import LoginPage from "./pages/LoginPage";
-import * as DataProvider from "./providers/DataProvider";
+import DataProvider from "./providers/DataProvider";
 import * as AuthProvider from "./providers/AuthProvider";
 
 import * as Users from "./components/Users";
@@ -27,7 +27,6 @@ const App = () => {
         icon={FaUser}
         show={Users.UserShow}
         list={Users.UserList}
-        create={Users.UserCreate}
         edit={Users.UserEdit}
       />
       <Resource

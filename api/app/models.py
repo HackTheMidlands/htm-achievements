@@ -19,7 +19,11 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
-    username = Column(String, unique=True, index=True)
+    discord_id = Column(String, unique=True, index=True)
+    discord_username = Column(String, unique=True, index=True)
+
+    twitter_id = Column(String, unique=True, index=True)
+    twitter_username = Column(String, unique=True, index=True)
 
     tokens: List["Token"] = relationship("Token", back_populates="owner", uselist=True)
     achievements: Query = relationship(

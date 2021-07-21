@@ -14,7 +14,7 @@
       cp example.env .env
 
   You *will* need to fill in any missing fields, such as the OAuth scope stuff
-  (see the [Discord OAuth guide](https://discord.com/developers/docs/topics/oauth2)).
+  for both Twitter and Discord.
 
 - Download and build docker image dependencies:
 

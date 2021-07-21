@@ -20,8 +20,9 @@ export function UserList(props) {
   return (
     <List {...props}>
       <Datagrid rowClick="show">
-        <TextField source="username" />
         <IDField source="id" />
+        <TextField source="discord_username" />
+        <TextField source="twitter_username" />
       </Datagrid>
     </List>
   );
@@ -32,7 +33,8 @@ export function UserShow(props) {
     <Show title={<UserTitle />} {...props}>
       <SimpleShowLayout>
         <IDField source="id" />
-        <TextField source="username" />
+        <TextField source="discord_username" />
+        <TextField source="twitter_username" />
         <ReferenceManyField
           reference="achievements"
           target="owner_id"
@@ -54,23 +56,28 @@ export function UserShow(props) {
   );
 }
 
-export const UserCreate = (props) => (
-  <Create {...props}>
-    <SimpleForm>
-      <TextInput source="username" />
-    </SimpleForm>
-  </Create>
-);
-
 export const UserEdit = (props) => (
   <Edit {...props}>
     <SimpleForm>
       <IDField disabled source="id" />
-      <TextInput source="username" validate={required()} />
+      <TextInput source="discord_id" />
+      <TextInput source="discord_username" />
+      <TextInput source="twitter_id" />
+      <TextInput source="twitter_username" />
     </SimpleForm>
   </Edit>
 );
 
+export function displayUsername(record) {
+  if (record.discord_username) {
+    return `discord:${record.discord_username}`;
+  } else if (record.twitter_username) {
+    return `twitter:${record.twitter_username}`;
+  } else {
+    return `#${record.id}`;
+  }
+}
+
 function UserTitle({ record }) {
-  return <span>User {record.username}</span>;
+  return <span>User {displayUsername(record)}</span>;
 }

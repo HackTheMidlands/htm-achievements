@@ -1,13 +1,13 @@
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
 
 class AchievementBase(BaseModel):
     name: str
-    tags: Dict[str, Any]
+    tags: Dict[str, Any] = {}
 
 
 class AchievementCreate(AchievementBase):
@@ -33,7 +33,7 @@ class Token(BaseModel):
 
 
 class UserBase(BaseModel):
-    username: str
+    pass
 
 
 class UserCreate(UserBase):
@@ -42,6 +42,12 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: uuid.UUID
+
+    discord_id: Optional[str]
+    discord_username: Optional[str]
+
+    twitter_id: Optional[str]
+    twitter_username: Optional[str]
 
     class Config:
         orm_mode = True

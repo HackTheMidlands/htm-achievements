@@ -1,6 +1,7 @@
 import {
   List,
   SelectInput,
+  FunctionField,
   Datagrid,
   TextField,
   Show,
@@ -14,6 +15,7 @@ import {
   TextInput,
 } from "react-admin";
 import { JsonField, JsonInput } from "react-admin-json-view";
+import { displayUsername } from "./Users.js";
 
 import { IDTitle, IDField } from "./utils/id.js";
 
@@ -21,7 +23,6 @@ function TagsField({ source, ...props }) {
   return (
     <JsonField
       source={source}
-      addLabel={true}
       reactJsonOptions={{
         name: null,
         collapsed: false,
@@ -32,12 +33,15 @@ function TagsField({ source, ...props }) {
     />
   );
 }
+TagsField.defaultProps = {
+  label: "Tags",
+  addLabel: true,
+};
 
 function TagsInput({ source, ...props }) {
   return (
     <JsonInput
       source={source}
-      addLabel={true}
       reactJsonOptions={{
         name: null,
         collapsed: false,
@@ -48,6 +52,10 @@ function TagsInput({ source, ...props }) {
     />
   );
 }
+TagsInput.defaultProps = {
+  label: "Tags",
+  addLabel: true,
+};
 
 export function AchievementList(props) {
   return (
@@ -71,8 +79,8 @@ export function AchievementShow(props) {
       <SimpleShowLayout>
         <IDField source="id" />
         <ChipField source="name" />
-        <ReferenceField source="owner_id" reference="users">
-          <TextField source="username" />
+        <ReferenceField source="owner_id" reference="users" link="show">
+          <FunctionField render={displayUsername} />
         </ReferenceField>
         <DateField source="timestamp" showTime />
         <TagsField source="tags" />
@@ -84,8 +92,8 @@ export function AchievementShow(props) {
 export const AchievementCreate = (props) => (
   <Create {...props}>
     <SimpleForm>
-      <ReferenceInput source="user" reference="users">
-        <SelectInput optionText="username" />
+      <ReferenceInput source="owner_id" reference="users">
+        <SelectInput optionText={displayUsername} />
       </ReferenceInput>
       <TextInput source="name" />
       <TagsInput source="tags" />

@@ -27,10 +27,16 @@ export async function fetchList(
 
 export async function createOne(endpoint, data) {
   const { data: ndata } = await API("POST", endpoint, data);
-  return { ndata };
+  return { data: ndata };
 }
 
 export async function updateOne(endpoint, data) {
   const { data: ndata } = await API("PUT", endpoint, data);
-  return { ndata };
+  return { data: ndata };
+}
+
+export async function deleteOne(endpoint) {
+  let { data } = fetchOne(endpoint);
+  await API("DELETE", endpoint);
+  return { data };
 }

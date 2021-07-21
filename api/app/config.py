@@ -6,6 +6,10 @@ DatabaseURL = os.environ["DATABASE_URL"]
 
 AdminList = os.environ.get("ADMIN_LIST", "").split(",")
 
-OauthClientID = os.environ["OAUTH_CLIENT_ID"]
-OauthClientSecret = os.environ["OAUTH_CLIENT_SECRET"]
-OauthClientScopes = "identify email"
+DiscordOauthClientID = os.environ["DISCORD_OAUTH_CLIENT_ID"]
+DiscordOauthClientSecret = os.environ["DISCORD_OAUTH_CLIENT_SECRET"]
+DiscordOauthClientScopes = "identify"
+
+TwitterOauthClientID = os.environ["TWITTER_OAUTH_CLIENT_ID"]
+TwitterOauthClientSecret = os.environ["TWITTER_OAUTH_CLIENT_SECRET"]
+TwitterOauthClientScopes = "identify"
