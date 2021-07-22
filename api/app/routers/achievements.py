@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/users/{userref}/achievements",
+    "/users/{userref}/achievements/",
     response_model=schemas.Achievement,
     tags=["user-achievements"],
 )
@@ -35,7 +35,7 @@ def create_user_achievement(
 
 
 @router.get(
-    "/users/@me/achievements",
+    "/users/@me/achievements/",
     response_model=List[schemas.Achievement],
     tags=["user-achievements"],
 )
@@ -54,7 +54,7 @@ def read_my_achievements(
 
 
 @router.get(
-    "/users/{userref}/achievements",
+    "/users/{userref}/achievements/",
     response_model=List[schemas.Achievement],
     tags=["user-achievements"],
 )
@@ -166,7 +166,7 @@ def read_achievement(
 
 
 @router.post(
-    "/achievements",
+    "/achievements/",
     response_model=schemas.Achievement,
     tags=["achievements"],
 )

@@ -17,8 +17,6 @@ import {
 import { JsonField, JsonInput } from "react-admin-json-view";
 import { displayUsername } from "./Users.js";
 
-import { IDTitle, IDField } from "./utils/id.js";
-
 function TagsField({ source, ...props }) {
   return (
     <JsonField
@@ -57,7 +55,7 @@ export function AchievementList(props) {
   return (
     <List {...props}>
       <Datagrid rowClick="show">
-        <IDField source="id" />
+        <TextField source="id" />
         <ChipField source="name" />
         <ReferenceField source="owner_id" reference="users">
           <FunctionField render={displayUsername} />
@@ -71,9 +69,9 @@ export function AchievementList(props) {
 
 export function AchievementShow(props) {
   return (
-    <Show title={<IDTitle name="Achievement" />} {...props}>
+    <Show {...props}>
       <SimpleShowLayout>
-        <IDField source="id" />
+        <TextField source="id" />
         <ChipField source="name" />
         <ReferenceField source="owner_id" reference="users" link="show">
           <FunctionField render={displayUsername} />

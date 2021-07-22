@@ -12,13 +12,11 @@ import {
   ChipField,
 } from "react-admin";
 
-import { IDField } from "./utils/id.js";
-
 export function UserList(props) {
   return (
     <List {...props}>
       <Datagrid rowClick="show">
-        <IDField source="id" />
+        <TextField source="id" />
         <TextField source="discord_username" />
         <TextField source="twitter_username" />
       </Datagrid>
@@ -30,7 +28,7 @@ export function UserShow(props) {
   return (
     <Show title={<UserTitle />} {...props}>
       <SimpleShowLayout>
-        <IDField source="id" />
+        <TextField source="id" />
         <TextField source="discord_username" />
         <TextField source="twitter_username" />
         <ReferenceManyField
@@ -38,14 +36,10 @@ export function UserShow(props) {
           target="owner_id"
           label="Achievements"
         >
-          <Datagrid
-            rowClick={(id, basePath, record) =>
-              `${basePath}/${record.owner_id},${record.id}/show`
-            }
-          >
-            <IDField source="id" />
+          <Datagrid rowClick="show">
+            <TextField source="id" />
             <ChipField source="name" />
-            <DateField source="timestamp" showTime />
+            <DateField source="created_at" showTime />
             <TextField source="tags" />
           </Datagrid>
         </ReferenceManyField>
@@ -57,7 +51,7 @@ export function UserShow(props) {
 export const UserEdit = (props) => (
   <Edit {...props}>
     <SimpleForm>
-      <IDField disabled source="id" />
+      <TextField disabled source="id" />
       <TextInput source="discord_id" />
       <TextInput source="discord_username" />
       <TextInput source="twitter_id" />
