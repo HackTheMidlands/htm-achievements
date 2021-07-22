@@ -1,5 +1,5 @@
 import uuid
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
