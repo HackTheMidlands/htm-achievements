@@ -6,6 +6,7 @@ exec 1>&2
 
 (
     cd api/
+    autoflake --recursive --remove-all-unused-imports --check app/
     isort --check \
         --multi-line=3 \
         --trailing-comma \
