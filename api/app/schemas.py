@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 
@@ -10,13 +10,17 @@ class AchievementBase(BaseModel):
     tags: Dict[str, Any] = {}
 
 
-class AchievementCreate(AchievementBase):
+class AchievementCreateForUser(AchievementBase):
     pass
+
+
+class AchievementCreate(AchievementBase):
+    owner_ref: Union[uuid.UUID, str]
 
 
 class Achievement(AchievementBase):
     id: uuid.UUID
-    owner_id: uuid.UUID
+    owner_id: Optional[uuid.UUID]
 
     created_at: datetime
     updated_at: datetime

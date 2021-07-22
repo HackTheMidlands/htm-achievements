@@ -1,29 +1,145 @@
 import uuid
-from typing import List, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from . import models
 
 
-def get_user(db: Session, username: Union[uuid.UUID, str]):
-    if isinstance(username, uuid.UUID):
-        f = models.User.id == username
+def _sync_pending_achievements(db: Session, user: models.User):
+    pendings = (
+        db.query(models.PendingAchievement).filter(
+            models.PendingAchievement.user_reference.in_(
+                [
+                    str(user.id),
+                    f"discord:{user.discord_id}",
+                    f"discord:{user.discord_username}",
+                    f"twitter:{user.twitter_id}",
+                    f"twitter:{user.twitter_username}",
+                ]
+            )
+        )
+        # .order_by(models.PendingAchievement.achievement.updated_at.desc())
+        .all()
+    )
+
+    names = set()
+    for pending in pendings:
+        if pending.achievement.name in names:
+            continue
+
+        pending.achievement.owner = user
+        db.delete(pending)
+
+        names.add(pending.achievement.name)
+
+    db.commit()
+
+
+def create_user(
+    db: Session,
+    discord_username: Optional[str] = None,
+    discord_id: Optional[str] = None,
+    twitter_username: Optional[str] = None,
+    twitter_id: Optional[str] = None,
+) -> models.User:
+    db_user = models.User(
+        discord_username=discord_username,
+        discord_id=discord_id,
+        twitter_username=twitter_username,
+        twitter_id=twitter_id,
+    )
+    db.add(db_user)
+    db.commit()
+    _sync_pending_achievements(db, db_user)
+    db.refresh(db_user)
+    return db_user
+
+
+def delete_user(db: Session, user: models.User):
+    db.delete(user)
+
+
+def delete_achievement(db: Session, achievement: models.Achievement):
+    db.delete(achievement)
+
+
+def modify_user(
+    db: Session,
+    user: models.User,
+    discord_username: Optional[str] = None,
+    discord_id: Optional[str] = None,
+    twitter_username: Optional[str] = None,
+    twitter_id: Optional[str] = None,
+) -> models.User:
+    if discord_username:
+        user.discord_username = discord_username
+    if discord_id:
+        user.discord_id = discord_id
+    if twitter_username:
+        user.twitter_username = twitter_username
+    if twitter_id:
+        user.twitter_id = twitter_id
+    db.commit()
+    _sync_pending_achievements(db, user)
+    db.refresh(user)
+    return user
+
+
+def create_achievement(
+    db: Session,
+    name: str,
+    owner: Optional[models.User] = None,
+    owner_ref: Optional[Union[uuid.UUID, str]] = None,
+    tags: Any = None,
+) -> models.User:
+    if owner:
+        db_achievement = get_user_achievement(db, owner, name)
+        if db_achievement:
+            db.delete(db_achievement)
+
+    if owner:
+        db_achievement = models.Achievement(
+            name=name,
+            tags=tags,
+            owner=owner,
+        )
+    else:
+        db_achievement = models.Achievement(name=name, tags=tags)
+    db.add(db_achievement)
+    db.commit()
+    db.refresh(db_achievement)
+
+    if owner is None and owner_ref is not None:
+        db_pending = models.PendingAchievement(
+            achievement=db_achievement,
+            user_reference=str(owner_ref),
+        )
+        db.add(db_pending)
+        db.commit()
+
+    return db_achievement
+
+
+def get_user(db: Session, userref: Union[uuid.UUID, str]):
+    if isinstance(userref, uuid.UUID):
+        f = models.User.id == userref
     else:
         try:
-            prefix, username = username.split(":")
+            prefix, username = userref.split(":")
         except ValueError:
             return None
 
         if prefix == "discord":
-            f = (
-                models.User.discord_username == username
-                or models.User.discord_id == username
+            f = or_(
+                models.User.discord_username == username,
+                models.User.discord_id == username,
             )
         elif prefix == "twitter":
-            f = (
-                models.User.twitter_username == username
-                or models.User.twitter_id == username
+            f = or_(
+                models.User.twitter_username == username,
+                models.User.twitter_id == username,
             )
 
     user = db.query(models.User).filter(f).first()
