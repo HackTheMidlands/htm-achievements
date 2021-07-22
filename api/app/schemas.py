@@ -5,6 +5,35 @@ from typing import Any, Dict, Optional, Union
 from pydantic import BaseModel
 
 
+class UserBase(BaseModel):
+    discord_id: Optional[str]
+    discord_username: Optional[str]
+
+    twitter_id: Optional[str]
+    twitter_username: Optional[str]
+
+
+class UserCreate(UserBase):
+    pass
+
+
+class User(UserBase):
+    id: uuid.UUID
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class Token(BaseModel):
+    id: uuid.UUID
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
 class AchievementBase(BaseModel):
     name: str
     tags: Dict[str, Any] = {}
@@ -29,30 +58,11 @@ class Achievement(AchievementBase):
         orm_mode = True
 
 
-class Token(BaseModel):
+class PendingAchievementBase(BaseModel):
     id: uuid.UUID
-    created_at: datetime
-
-    class Config:
-        orm_mode = True
+    user_reference: str
 
 
-class UserBase(BaseModel):
-    discord_id: Optional[str]
-    discord_username: Optional[str]
-
-    twitter_id: Optional[str]
-    twitter_username: Optional[str]
-
-
-class UserCreate(UserBase):
-    pass
-
-
-class User(UserBase):
-    id: uuid.UUID
-    created_at: datetime
-    updated_at: datetime
-
+class PendingAchievement(PendingAchievementBase):
     class Config:
         orm_mode = True

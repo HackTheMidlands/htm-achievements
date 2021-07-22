@@ -62,13 +62,22 @@ class Achievement(Base):
     owner_id: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     owner: User = relationship("User", back_populates="achievements", uselist=False)
 
+    pending: "PendingAchievement" = relationship(
+        "PendingAchievement",
+        back_populates="achievement",
+        uselist=False,
+        cascade="all, delete",
+    )
+
 
 class PendingAchievement(Base):
     __tablename__ = "pending_achievements"
 
-    achievement_id: uuid.UUID = Column(
+    id: uuid.UUID = Column(
         UUID(as_uuid=True), ForeignKey("achievements.id"), primary_key=True
     )
-    achievement: Achievement = relationship("Achievement")
+    achievement: Achievement = relationship(
+        "Achievement", back_populates="pending", uselist=False, foreign_keys=[id]
+    )
 
     user_reference = Column(String)

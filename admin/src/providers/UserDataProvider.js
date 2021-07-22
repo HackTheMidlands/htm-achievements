@@ -29,7 +29,8 @@ export async function deleteOne(resource, { id }) {
 }
 
 export async function deleteMany(resource, { ids }) {
-  return await Promise.all(
+  const data = await Promise.all(
     ids.map(async (id) => (await deleteOne(resource, { id })).id)
   );
+  return { data };
 }

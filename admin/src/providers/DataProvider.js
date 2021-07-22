@@ -1,9 +1,11 @@
-import * as Achievements from "./AchievementDataProvider.js";
 import * as Users from "./UserDataProvider.js";
+import * as Achievements from "./AchievementDataProvider.js";
+import * as PendingAchievements from "./PendingAchievementDataProvider";
 
 const lookupTable = {
   users: Users,
   achievements: Achievements,
+  pending_achievements: PendingAchievements,
 };
 function lookup(method) {
   return async function (resource, params) {

@@ -7,6 +7,7 @@ import * as AuthProvider from "./providers/AuthProvider";
 
 import * as Users from "./components/Users";
 import * as Achievements from "./components/Achievements";
+import * as PendingAchievements from "./components/PendingAchievements";
 
 import useTheme from "./hooks/useTheme";
 import { FaUser, FaMedal } from "react-icons/fa";
@@ -35,6 +36,11 @@ const App = () => {
         show={Achievements.AchievementShow}
         list={Achievements.AchievementList}
         create={Achievements.AchievementCreate}
+      />
+      <Resource
+        name="pending_achievements"
+        icon={FaMedal}
+        list={PendingAchievements.PendingAchievementList}
       />
     </Admin>
   );

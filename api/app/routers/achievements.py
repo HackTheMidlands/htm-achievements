@@ -132,8 +132,7 @@ def delete_user_achievement(
     if not db_achievement:
         raise HTTPException(status_code=404, detail="Achievement not found")
 
-    db.delete(db_achievement)
-    db.commit()
+    crud.delete_achievement(db, db_achievement)
 
 
 @router.get(
@@ -200,5 +199,37 @@ def delete_achievement(
     if not db_achievement:
         raise HTTPException(status_code=404, detail="Achievement not found")
 
-    db.delete(db_achievement)
-    db.commit()
+    crud.delete_achievement(db, db_achievement)
+
+
+@router.get(
+    "/pending_achievements/",
+    response_model=List[schemas.PendingAchievement],
+    tags=["achievements"],
+)
+def read_pending_achievements(
+    response: Response,
+    offset: int = 0,
+    limit: int = 25,
+    db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
+):
+    validate.check_limit(limit)
+    response.headers["X-Total-Count"] = str(crud.count_pending_achievements(db))
+    return crud.get_pending_achievements(db, (limit, offset))
+
+
+@router.get(
+    "/pending_achievements/{id}",
+    response_model=schemas.PendingAchievement,
+    tags=["achievements"],
+)
+def read_pending_achievement(
+    id: uuid.UUID,
+    db: Session = Depends(get_db),
+    token: models.Token = Depends(get_token_admin),
+):
+    db_achieve = crud.get_pending_achievement(db, id)
+    if not db_achieve:
+        raise HTTPException(status_code=404, detail="Achievement not found")
+    return db_achieve
