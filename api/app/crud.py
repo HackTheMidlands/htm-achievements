@@ -1,5 +1,5 @@
 import uuid
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
@@ -180,7 +180,7 @@ def create_achievement(
     name: str,
     owner: Optional[models.User] = None,
     owner_ref: Optional[Union[uuid.UUID, str]] = None,
-    tags: Any = None,
+    tags: Dict[str, Any] = None,
 ) -> models.User:
     if owner:
         db_achievement = get_user_achievement(db, owner, name)

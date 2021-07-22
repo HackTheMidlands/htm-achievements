@@ -77,7 +77,7 @@ def read_user_achievements(
 
 
 @router.get(
-    "/users/@me/achievements/{achievement}",
+    "/users/@me/achievements/{id}",
     response_model=schemas.Achievement,
     tags=["user-achievements"],
 )
@@ -93,7 +93,7 @@ def read_my_achievement(
 
 
 @router.get(
-    "/users/{userref}/achievements/{achievement}",
+    "/users/{userref}/achievements/{id}",
     response_model=schemas.Achievement,
     tags=["user-achievements"],
 )
@@ -114,7 +114,7 @@ def read_user_achievement(
 
 
 @router.delete(
-    "/users/{userref}/achievements/{achievement}",
+    "/users/{userref}/achievements/{id}",
     response_model=schemas.Achievement,
     tags=["user-achievements"],
 )
@@ -186,7 +186,7 @@ def create_achievement(
 
 
 @router.delete(
-    "/achievements/{achievement}",
+    "/achievements/{id}",
     response_model=schemas.Achievement,
     tags=["achievements"],
 )
