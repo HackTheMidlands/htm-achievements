@@ -94,8 +94,8 @@ async def login(request: Request, provider: str, redirect: HttpUrl):
     except starlette.routing.NoMatchFound:
         raise HTTPException(status_code=400, detail="Invalid auth provider")
 
-    if provider != "discord":
-        raise HTTPException(status_code=400, detail="Invalid auth provider")
+    # if provider != "discord":
+    #     raise HTTPException(status_code=400, detail="Invalid auth provider")
     actual_provider = oauth.create_client(provider)
 
     request.session["redirect"] = redirect
@@ -152,8 +152,7 @@ async def auth_discord(request: Request, db: Session = Depends(get_db)):
 
         db_token = models.Token(
             owner=db_user,
-            admin=f"discord:{username}" in config.AdminList
-            or f"discord:{userid}" in config.AdminList,
+            admin=crud.is_admin(db_user),
         )
         db.add(db_token)
         db.commit()
@@ -199,8 +198,7 @@ async def auth_twitter(request: Request, db: Session = Depends(get_db)):
 
         db_token = models.Token(
             owner=db_user,
-            admin=f"twitter:{username}" in config.AdminList
-            or f"twitter:{userid}" in config.AdminList,
+            admin=crud.is_admin(db_user),
         )
         db.add(db_token)
         db.commit()

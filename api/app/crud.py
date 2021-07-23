@@ -1,10 +1,10 @@
 import uuid
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from . import models
+from . import config, models
 
 
 def get_user(db: Session, userref: Union[uuid.UUID, str]):
@@ -88,20 +88,28 @@ def delete_user(db: Session, user: models.User):
     db.commit()
 
 
+def is_admin(user: models.User) -> bool:
+    # FIXME: this is quite inefficient
+    for ref in _get_user_refs(user):
+        if ref in config.AdminList:
+            return True
+    return False
+
+
+def _get_user_refs(user: models.User) -> List[str]:
+    return [
+        str(user.id),
+        f"discord:{user.discord_id}",
+        f"discord:{user.discord_username}",
+        f"twitter:{user.twitter_id}",
+        f"twitter:{user.twitter_username}",
+    ]
+
+
 def _sync_pending_achievements(db: Session, user: models.User):
     pendings = (
         db.query(models.PendingAchievement)
-        .filter(
-            models.PendingAchievement.user_reference.in_(
-                [
-                    str(user.id),
-                    f"discord:{user.discord_id}",
-                    f"discord:{user.discord_username}",
-                    f"twitter:{user.twitter_id}",
-                    f"twitter:{user.twitter_username}",
-                ]
-            )
-        )
+        .filter(models.PendingAchievement.user_reference.in_(_get_user_refs(user)))
         .join(models.Achievement, models.PendingAchievement.achievement)
         .order_by(models.Achievement.updated_at.desc())
         .all()
