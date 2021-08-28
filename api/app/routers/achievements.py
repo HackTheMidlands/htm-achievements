@@ -191,14 +191,13 @@ def create_achievement(
     tags=["achievements"],
 )
 def delete_achievement(
-    achievement: uuid.UUID,
+    id: uuid.UUID,
     db: Session = Depends(get_db),
     token: models.Token = Depends(get_token_admin),
 ):
-    db_achievement = crud.get_achievement(db, achievement)
+    db_achievement = crud.get_achievement(db, id)
     if not db_achievement:
         raise HTTPException(status_code=404, detail="Achievement not found")
-
     crud.delete_achievement(db, db_achievement)
 
 

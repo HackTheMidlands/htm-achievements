@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            /* background-color: rgb(46, 46, 46); */
+            background: #eff6ff;
+            /* background: #5a82b8; */
+            font-family: Cairo, sans-serif;
+            /* z-index: -2; */
+            margin: 0px;
+            letter-spacing: -.1rem;
+
+        }
+
+        .header {
+            background: #5d83ff;
+            background: linear-gradient(59deg, rgba(14, 25, 194, 1) 0%, rgba(59, 102, 250, 1) 55%, rgba(0, 212, 255, 1) 100%);
+            /* z-index: 0; */
+            position: absolute;
+            height: 455px;
+            width: 100%;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 000px;
+            /* z-index: -1; */
+            width: 100%;
+        }
+
+        .logo {
+            top: 15px;
+            left: 15px;
+            width: 206px;
+            height: 15 0px;
+            position: absolute;
+            z-index: 40;
+
+        }
+
+        body {
+            display: grid;
+            gap: 20px;
+            grid-template-rows: 400px 1fr 1fr 1fr 1fr;
+
+        }
+
+        .heading {
+            padding-top: 50px;
+            font-size: 2.0555555556rem;
+            text-align: center;
+            font-weight: 700;
+            z-index: 20;
+            color: white;
+            width: 50%;
+            margin: auto;
+            margin-top: 30px;
+            /* margin-bottom: 1rem; */
+        }
+
+        h3.head {
+            font-size: 2.0555555556rem;
+            margin: 0px;
+        }
+
+        h1.head {
+            margin: 10px
+        }
+
+        p.head {
+            font-weight: 400;
+            font-size: 1.255555556rem;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .achieve_holder {
+
+            background-color: rgb(255, 255, 255);
+            min-height: 100px;
+            margin: auto;
+            display: grid;
+            /* grid-template-columns: 100px 100px 100px; */
+            grid-template-columns: repeat(3, 120px);
+            border-color: rgb(70, 70, 70);
+            /* border-color: rgb(9, 165, 255); */
+            border-width: 1px;
+            gap: 00px;
+            padding: 20px;
+            padding-bottom: 0px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, .06);
+            /* border:red; */
+            /* border-style: solid; */
+            width: max-content;
+            position: relative;
+            border-radius: 20px;
+            /* border-top:none; */
+            /* background:rgb(42, 118, 233); */
+        }
+
+        .achieve {
+            height: 100px;
+            width: 100px;
+            transition: all 0.2s;
+            filter: drop-shadow(0 0 0.2rem #686868);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .achieve:hover {
+            height: 120px;
+            width: 120px;
+            /* transform: rotate(-5deg); */
+            /* transform: translate(-10px, -10px); */
+            transform: translate(-10px, -10px) rotate(-5deg);
+            filter: drop-shadow(0 0 0.75rem #4444dd);
+            filter: drop-shadow(0 0 0.75rem #6d6d6d);
+            /* filter: drop-shadow(30px 10px 4px #4444dd); */
+        }
+
+        .achieve_box {
+            height: 120px;
+            width: 120px;
+        }
+
+        .achieve_holder_master {
+            margin: auto;
+            /* position: relative; */
+            /* z-index: 10; */
+        }
+
+        .achieve_heading {
+            padding: 10px;
+            color: #373f49;
+            font-weight: 700;
+            /* background-color: rgb(46, 46, 46); */
+            margin: auto;
+            text-align: center;
+            width: max-content;
+            font-size: 1.2555555556rem;
+            z-index: 5;
+            position: relative;
+            /* position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding-left: 50px;
+            padding-right: 50px; */
+            /* background: red; */
+        }
+
+        .achieve_disactive {
+            filter: grayscale(100%);
+            opacity: 50%;
+            height: 100px;
+            width: 100px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .svg {
+            width: 300px;
+            display: block;
+            margin: auto;
+        }
+
+
+
+
+        .icon:after {
+            content: "";
+            position: absolute;
+            top: -110%;
+            left: -210%;
+            width: 200%;
+            height: 200%;
+            opacity: 0;
+            transform: rotate(30deg);
+
+            /* background: rgba(255, 255, 255, 0.13); */
+            background: linear-gradient(to right,
+                    rgba(255, 255, 255, 0.13) 0%,
+                    rgba(255, 255, 255, 0.13) 77%,
+                    rgba(255, 255, 255, 0.5) 92%,
+                    rgba(255, 255, 255, 0.0) 100%);
+        }
+
+        /* Hover state - trigger effect */
+
+        .icon:hover:after {
+            opacity: 1;
+            top: -30%;
+            left: -30%;
+            transition-property: left, top, opacity;
+            transition-duration: 0.7s, 0.7s, 0.15s;
+            transition-timing-function: ease;
+        }
+
+        /* Active state */
+
+        .icon:active:after {
+            opacity: 0;
+        }
+
+        .icon {
+            position: relative;
+            overflow: hidden;
+
+        }
+
+        .tooltiptext {
+            visibility: hidden;
+            width: 500px;
+            height: 240px;
+            background-color: white;
+            color: rgb(39, 39, 39);
+            /* text-align: center; */
+            /* padding:20px; */
+            border-radius: 6px;
+            padding: 5px 0;
+            box-shadow: 0 3px 6px rgba(12, 12, 12, 0.151);
+            /* Position the tooltip */
+            position: relative;
+            left: 150px;
+            top: -150px;
+            z-index: 1000;
+        }
+
+        h2.tool_tip_inner {
+            color: #373f49;
+            font-size: 1.5rem;
+            padding-left: 20px;
+            text-transform: capitalize;
+        }
+
+        p.tool_tip_inner {
+            padding-left: 20px;
+            padding-right: 20px;
+            font-size: 1.2rem;
+            color: #373b41;
+        }
+
+
+        h3.tool_tip_inner {
+            color: #373f49;
+            font-size: 1.4rem;
+            padding-left: 20px;
+            text-transform: capitalize;
+        }
+
+
+
+        .achieve_box:hover .tooltiptext {
+            visibility: visible;
+            z-index: 1000;
+        }
+
+        .achieve_box:hover {
+            z-index: 1000;
+        }
+
+        .tool_tip_inner.done {
+            color: rgb(0, 219, 48);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header"> <img
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzY0Ljk5OSIgaGVpZ2h0PSIxNTUiIHZpZXdCb3g9IjAgMCAxMzY0Ljk5OSAxNTUiPgogICAgPHBhdGggaWQ9IkludGVyc2VjdGlvbl8xIiBkYXRhLW5hbWU9IkludGVyc2VjdGlvbiAxIgogICAgICAgICAgZD0iTTAsMTU1VjBIMTM2NVYxNS4xMTRjLTIuMzI4LDEuMzU3LTEyLjU3NCw3LjIzMi0yOS4wNjIsMTUuMzQtMTEuMDc3LDUuNDQ3LTIyLjc5MiwxMC44MzktMzQuODE5LDE2LjAyNS0xNS4wMzQsNi40ODMtMzAuNjA1LDEyLjY2My00Ni4yODEsMTguMzY5YTg1OS40MTgsODU5LjQxOCwwLDAsMS0xMjEuMjYsMzQuMzk0Yy0yNC4wODMsNC45MjctNDguMzUyLDguNzQtNzIuMTMzLDExLjMzNGE3MjEuNTM0LDcyMS41MzQsMCwwLDEtNzcuOTA3LDQuM2MtMTAxLjMxMSwwLTE3OC45NTQtMTQuMjc4LTI2MS4xNTUtMjkuMzkzbC0uMDE0LDBDNjc2LjU4LDc3LjA1OCw2MjkuMjMzLDY4LjM1Miw1NzUuNTM4LDYxLjdjLTI5LjAxLTMuNTk1LTU3LjEyOC02LjI2NC04NS45NTktOC4xNTktMTUuNjctMS4wMy0zMS43MjktMS44MzMtNDcuNzMxLTIuMzg4LTE2LjgyNy0uNTgxLTM0LjE1OS0uOTA4LTUxLjUxMi0uOTY4LTEuMjM3LDAtMi40NDYtLjAwNi0zLjYtLjAwNi0zMi4wMTQsMC02My41NDksMS41MjgtOTMuNzI4LDQuNTQzQTgwOS4zOTMsODA5LjM5MywwLDAsMCwyMTIuOTYxLDY2LjdjLTQzLjI1NSw4Ljc2OS04My44MDYsMjEtMTIwLjUyOCwzNi4zNDUtMTQuNDI1LDYuMDI4LTI4LjI4OCwxMi41NTktNDEuMiwxOS40MS0xMC4zMzQsNS40ODMtMjAuMDg0LDExLjE4LTI4Ljk4MSwxNi45MzNBMjI4Ljk2NCwyMjguOTY0LDAsMCwwLC41NjUsMTU1WiIKICAgICAgICAgIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzNjQuOTk5IDE1NSkgcm90YXRlKDE4MCkiIGZpbGw9IiNlZmY2ZmYiLz4KPC9zdmc+Cg=="
+            class="wave" alt="Wave at bottom">
+            <div class="heading">
+                <h3 class="head">HackTheMidlands 6.0</h3>
+                <h1 class="head">Achievements</h1>
+                <p class="head">Track your progress throughout the hackathon. The more you learn the more you earn.</p>
+            </div>
+            <img src="htm.png" class="logo">
+    </div>
+    
+
+
+    <div class="achieve_holder_master">
+        <div class="achieve_heading">
+            Getting Started
+        </div>
+
+
+
+        <div class="achieve_holder">
+            <!-- <div></div> -->
+
+            <div class="achieve_box">
+                <img class="achieve" src="discord.png">
+            </div>
+            <div class="achieve_box">
+                <img class="achieve" src="discord.png">
+                <div class="tooltiptext">
+
+                    <h2 class="tool_tip_inner">The First Step</h2>
+                    <p class="tool_tip_inner">The first step on a long and happy journey. This is where it all begins.
+                    </p>
+                    <h3 class="tool_tip_inner">Requirements: </h3>
+                    <p class="tool_tip_inner done">Link your discord</p>
+
+                </div>
+                </img>
+            </div>
+            <div class="achieve_box icon">
+                <img class="achieve_disactive " src="discord.png">
+            </div>
+        </div>
+        <!-- <svg class="svg" viewBox="0 0 100 50" >
+            <path d="M 50 0 Q 50 25, 25 25 T 0 50" stroke="blue" fill="transparent"/>
+            <path d="M 50 0 Q 50 25, 75 25 T 100 50" stroke="gray" fill="transparent"/>
+            <path d="M 50 0 Q 50 25, 50 50 T 50 50" stroke="blue" fill="transparent"/>
+        </svg> -->
+    </div>
+
+
+
+
+    <div class="achieve_holder_master">
+        <div class="achieve_heading">
+            Next Level
+        </div>
+
+        <div class="achieve_holder">
+            <!-- <div></div> -->
+
+            <div class="achieve_box">
+                <img class="achieve" src="discord.png">
+            </div>
+            <div class="achieve_box">
+                <img class="achieve" src="discord.png">
+            </div>
+            <div class="achieve_box">
+                <img class="achieve_disactive" src="discord.png">
+            </div>
+        </div>
+    </div>
+
+    <div class="achieve_holder_master">
+        <div class="achieve_heading">
+            Capture That Flag
+        </div>
+
+        <div class="achieve_holder">
+            <!-- <div></div> -->
+
+            <div class="achieve_box">
+                <img class="achieve" src="discord.png">
+            </div>
+
+            <div class="achieve_box">
+                <img class="achieve_disactive" src="discord.png">
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
