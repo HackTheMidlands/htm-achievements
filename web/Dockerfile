@@ -13,7 +13,7 @@ RUN yarn build
 
 # stage: prod
 FROM nginx:latest AS prod
-COPY nginx_a.conf /etc/nginx/conf.d/default.conf
+# COPY nginx_a.conf /etc/nginx/conf.d/default.conf
 # # COPY /app/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/build/ /usr/share/nginx/html/
 

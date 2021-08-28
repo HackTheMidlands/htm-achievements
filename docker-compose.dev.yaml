@@ -8,6 +8,15 @@ services:
     volumes:
       - "./admin/src:/app/src"
       - "./admin/public:/app/public"
+
+  web:
+    build:
+      context: ./web
+      target: dev
+    volumes:
+      - "./web/src:/app/src"
+      - "./web/public:/app/public"
+  
   
   api:
     build:

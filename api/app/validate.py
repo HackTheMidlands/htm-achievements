@@ -15,5 +15,6 @@ def check_limit(limit: int):
 
 
 def check_redirect(redirect: HttpUrl):
-    if not redirect.host.endswith("." + config.Domain):
+    if not redirect.host.endswith(config.Domain):
         raise HTTPException(status_code=404, detail="Invalid redirect url")
+
