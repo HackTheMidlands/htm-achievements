@@ -113,28 +113,29 @@ p.head {
   position: relative;
 }
 
-.achieve_holder {
 
+.achieve_holder {
   background-color: rgb(255, 255, 255);
   min-height: 100px;
   margin: auto;
-  display: grid;
-  /* grid-template-columns: 100px 100px 100px; */
-  grid-template-columns: repeat(3, 120px);
-  border-color: rgb(70, 70, 70);
-  /* border-color: rgb(9, 165, 255); */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, .06);
+  gap:10px;
+  display: flex;
+
   border-width: 1px;
-  gap: 00px;
+  gap: 10px;
   padding: 20px;
   padding-bottom: 0px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, .06);
-  /* border:red; */
-  /* border-style: solid; */
+
   width: max-content;
   position: relative;
   border-radius: 20px;
-  /* border-top:none; */
-  /* background:rgb(42, 118, 233); */
+  flex-wrap: wrap;
+  /* min-width: 1000px; */
+  max-width: min(90%,800px);
+  align-items: center;
+  justify-content: space-evenly;
+
 }
 
 .achieve {
@@ -281,4 +282,8 @@ h3.tool_tip_inner {
 .achieve_box:hover .achieve_label {
   visibility: visible;
   opacity: 1;
+}
+
+.green{
+  color:rgb(1, 194, 1);
 }

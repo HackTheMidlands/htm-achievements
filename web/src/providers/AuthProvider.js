@@ -15,6 +15,19 @@ export async function login() {
 
 }
 
+export async function login_twitter() {
+  // try {
+  //   await API("GET", "users/@me");
+    window.location.assign(`${API_URL}/connect/twitter?redirect=${SITE_URL}`);
+  // } catch (err) {
+  //   if (err instanceof APIError && err.status === 401) {
+      
+  //   }
+  //   throw err;
+  // }
+}
+
+
 export async function checkError(error) {
   if (error.status === 401) {
     throw error;
@@ -22,9 +35,7 @@ export async function checkError(error) {
 }
 export async function checkAuth() {
   try {
-    await API("GET", "users/@me")//.then(value => { console.log(value) });
-    console.log("logged in")
-    return true
+    return await API("GET", "users/@me");    
   }catch (err) {
     if (err instanceof APIError && err.status === 401) {
       console.log("logged out")

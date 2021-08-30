@@ -1,7 +1,7 @@
 import logo from "../resources/discord.png";
 import cpu from "../resources/cpu.png";
 // im;
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 export function AchieveHolder(props) {
     return (
@@ -9,7 +9,7 @@ export function AchieveHolder(props) {
             <div class="achieve_heading">
                 {props.name}
             </div>
-
+            {/* <div class="achieve_holder_holder"> */}
             <div class="achieve_holder">
                 {props.children}
         
@@ -25,6 +25,7 @@ export function AchieveHolder(props) {
             <div class="achieve_box">
                 <img class="achieve_disactive" src="discord.png">
             </div> */}
+            {/* </div> */}
             </div>
         </div>
     )
@@ -61,21 +62,15 @@ export class Achievement extends Component {
     }
 
     render() {
-        if (this.props.active) {
+
             return (
                 <div className="achieve_box" ref={this.wrapperRef}>
-                    <img className="achieve" onClick={() => this.setState({ active: true })} src={this.props.icon}></img>
-                    <ToolTip active={this.state.active} name={"The First Step"} desc={"The first step on a long and happy journey. This is where it all begins."}></ToolTip>
+                    <img className={this.props.active?"achieve":"achieve_disactive"} onClick={() => this.setState({ active: true })} src={this.props.icon}></img>
+                    <ToolTip active={this.state.active} name={this.props.name} desc={this.props.description} requirements={this.props.requirements}></ToolTip>
                     <div class="achieve_label">{this.props.name}</div>
                 </div>
             )
-        } else {
-            return (<div className="achieve_box" ref={this.wrapperRef}>
-                <img className="achieve_disactive" src={this.props.icon}></img>
-                <ToolTip name={"The First Step"} desc={"Click the button"}></ToolTip>
-                <div class="achieve_label">{this.props.name}</div>
-            </div>)
-        }
+      
     }
 }
 
@@ -104,16 +99,25 @@ Achievement.propTypes = {
 
 
 export function ToolTip(props) {
+
+        let requirements=[]
+        console.log(props)
+        for (let i=0; i< props.requirements.length;i++){
+            requirements.push(<div className={props.requirements[i].active?"green":""}>{props.requirements[i].text } </div>)
+        }
     //if (props.active) {
         return (
 
-            <div class={(props.active)?"tool_tip active":"tool_tip"}>
+            <div className={(props.active)?"tool_tip active":"tool_tip"}>
 
-                <h2 class="tool_tip_inner">{props.name}</h2>
-                <p class="tool_tip_inner">{props.desc}
+                <h2 className="tool_tip_inner">{props.name}</h2>
+                <p className="tool_tip_inner">{props.desc}
                 </p>
-                <h3 class="tool_tip_inner">Requirements: </h3>
-                <p class="tool_tip_inner done">Link your discord</p>
+                <h3 className="tool_tip_inner">Requirements: </h3>
+                <p className="tool_tip_inner done">
+
+                    {requirements}
+                </p>
 
             </div>)
   //  }
