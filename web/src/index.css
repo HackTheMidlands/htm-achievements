@@ -214,7 +214,7 @@ p.head {
   z-index: 5000;
   border-radius: 6px;
   box-shadow: 0 3px 6px rgba(12, 12, 12, 0.151);
-  transition: all 1s;
+  transition: all 0.7s;
   opacity: 0;
 }
 /* .achieve_box:hover .tool_tip {
@@ -237,6 +237,14 @@ p.tool_tip_inner {
   font-size: 1.2rem;
   color: #373b41;
   text-align: left;
+}
+
+.tool_tip_inner_req{
+  text-align: left;
+  padding-left: 20px;
+  padding-right: 20px;
+  font-size: 1.1rem;
+  color:#313131;
 }
 
 
@@ -286,4 +294,30 @@ h3.tool_tip_inner {
 
 .green{
   color:rgb(1, 194, 1);
+}
+
+.discord_login{
+  background:#7289DA;
+  color:white;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  margin:auto;
+  width: max-content;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.253);
+  user-select:none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.discord_login:hover{
+  box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.603);
+  transform: perspective(500px) translate3d(0px,0px,20px);
+}
+
+.discord_login:active{
+  background:#657fdf;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.603);
+  transform: perspective(500px) translate3d(0px,0px,-5px);
 }
