@@ -13,6 +13,8 @@ services:
     build:
       context: ./web
       target: dev
+    environment:
+      REACT_APP_HOST: ${DOMAIN:-achieve.localhost}
     volumes:
       - "./web/src:/app/src"
       - "./web/public:/app/public"

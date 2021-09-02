@@ -45,9 +45,13 @@ services:
       - "db_data:/var/lib/postgresql/data"
 
   admin:
+    image: ghcr.io/HackTheMidlands/htm-achievements/admin:${TAG}
     build:
       context: ./admin
       target: prod
+      labels:
+        org.opencontainers.image.title: achievements-admin-ui
+        org.opencontainers.image.source: https://github.com/HackTheMidlands/htm-achievements
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -57,9 +61,15 @@ services:
       - "traefik.http.routers.admin.tls=true"
 
   web:
+    image: ghcr.io/HackTheMidlands/htm-achievements/api:${TAG}
     build:
       context: ./web
       target: prod
+      args:
+        REACT_APP_HOST: ${DOMAIN:-achieve.localhost}
+      labels:
+        org.opencontainers.image.title: achievements-ui
+        org.opencontainers.image.source: https://github.com/HackTheMidlands/htm-achievements
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -69,9 +79,13 @@ services:
       - "traefik.http.routers.web.tls=true"
 
   api:
+    image: ghcr.io/HackTheMidlands/htm-achievements/api:${TAG}
     build:
       context: ./api
       target: prod
+      labels:
+        org.opencontainers.image.title: achievements-api
+        org.opencontainers.image.source: https://github.com/HackTheMidlands/htm-achievements
     restart: unless-stopped
     depends_on:
       db:
