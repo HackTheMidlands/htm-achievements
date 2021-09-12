@@ -33,6 +33,7 @@ services:
       DOMAIN: ${DOMAIN:-achieve.localhost}
 
   db:
+    image: ghcr.io/hackthemidlands/htm-achievements/postgres:${TAG}
     build: ./postgres
     restart: unless-stopped
     environment:
@@ -45,7 +46,7 @@ services:
       - "db_data:/var/lib/postgresql/data"
 
   admin:
-    image: ghcr.io/HackTheMidlands/htm-achievements/admin:${TAG}
+    image: ghcr.io/hackthemidlands/htm-achievements/admin:${TAG}
     build:
       context: ./admin
       target: prod
@@ -61,7 +62,7 @@ services:
       - "traefik.http.routers.admin.tls=true"
 
   web:
-    image: ghcr.io/HackTheMidlands/htm-achievements/api:${TAG}
+    image: ghcr.io/hackthemidlands/htm-achievements/ui:${TAG}
     build:
       context: ./web
       target: prod
@@ -79,7 +80,7 @@ services:
       - "traefik.http.routers.web.tls=true"
 
   api:
-    image: ghcr.io/HackTheMidlands/htm-achievements/api:${TAG}
+    image: ghcr.io/hackthemidlands/htm-achievements/api:${TAG}
     build:
       context: ./api
       target: prod

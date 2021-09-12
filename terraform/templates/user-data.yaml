@@ -1,0 +1,21 @@
+#cloud-config
+
+groups:
+  - docker
+
+users:
+  - default
+  - name: chasbob
+    lock_passwd: true
+    shell: /bin/bash
+    ssh_import_id:
+      - gh:chasbob
+    groups: docker
+    sudo: ALL=(ALL) NOPASSWD:ALL
+
+write_files:
+  %{ for path, content in files }
+  - path: ${path}
+    content: |
+      ${indent(6, content)}
+  %{ endfor }
