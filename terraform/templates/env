@@ -1,0 +1,13 @@
+DB_USERNAME=${db_username}
+DB_PASSWORD=${db_password}
+API_DB_USERNAME=${api_db_username}
+API_DB_PASSWORD=${api_db_password}
+
+SESSION_SECRET=${session_secret}
+
+DISCORD_OAUTH_CLIENT_ID=${discord_oauth_client_id}
+DISCORD_OAUTH_CLIENT_SECRET=${discord_oauth_client_secret}
+TWITTER_OAUTH_CLIENT_ID=${twitter_oauth_client_id}
+TWITTER_OAUTH_CLIENT_SECRET=${twitter_oauth_client_secret}
+
+ADMIN_LIST=${admin_list}
