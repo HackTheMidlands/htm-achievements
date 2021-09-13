@@ -13,6 +13,10 @@ data "cloudinit_config" "web" {
           "/srv/achivements/docker-compose.yml"     = file("${path.module}/../docker-compose.yaml")
           "/srv/achivements/traefik/certs/dev.cert" = cloudflare_origin_ca_certificate.origin.certificate
           "/srv/achivements/traefik/certs/dev.pem"  = tls_private_key.origin.private_key_pem
+          "/srv/achivements/postgres/.keep"         = ""
+          "/srv/achivements/web/.keep"              = ""
+          "/srv/achivements/api/.keep"              = ""
+          "/srv/achivements/admin/.keep"            = ""
           "/srv/achivements/.env" = templatefile("${path.module}/templates/env", {
             db_username     = ""
             db_password     = ""
