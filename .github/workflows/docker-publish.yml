@@ -25,6 +25,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       contents: read
       packages: write
@@ -61,7 +62,9 @@ jobs:
     name: 'Terraform'
     runs-on: ubuntu-latest
     environment: production
-    needs: build
+    # needs: build
+    env:
+      TF_VAR_tag: ${{ env.GITHUB_REF }}
 
     defaults:
       run:
@@ -75,11 +78,11 @@ jobs:
       with:
         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
     - name: Terraform Init
-      run: terraform -chdir=terraform init
+      run: terraform -chdir=terraform init -var-file=terraform.tfvars
     - name: Terraform Format
-      run: terraform -chdir=terraform fmt -check
+      run: terraform -chdir=terraform fmt
     - name: Terraform Plan
-      run: terraform -chdir=terraform plan
+      run: terraform -chdir=terraform plan -var-file=terraform.tfvars
     - name: Terraform Apply
       if: github.ref == 'refs/heads/trunk' && github.event_name == 'push'
-      run: terraform -chdir=terraform apply -auto-approve
+      run: terraform -chdir=terraform apply -auto-approve -var-file=terraform.tfvars
