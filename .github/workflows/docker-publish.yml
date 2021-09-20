@@ -6,8 +6,6 @@ name: Docker
 # documentation.
 
 on:
-  schedule:
-    - cron: '29 13 * * *'
   push:
     branches: [ trunk ]
     # Publish semver tags as releases.
@@ -64,7 +62,7 @@ jobs:
     environment: production
     # needs: build
     env:
-      TF_VAR_tag: ${{ env.GITHUB_REF }}
+      TF_VAR_tag: '${{ env.GITHUB_REF }}'
 
     defaults:
       run:
@@ -78,11 +76,11 @@ jobs:
       with:
         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
     - name: Terraform Init
-      run: terraform -chdir=terraform init -var-file=terraform.tfvars
+      run: terraform -chdir=terraform init
     - name: Terraform Format
       run: terraform -chdir=terraform fmt
     - name: Terraform Plan
-      run: terraform -chdir=terraform plan -var-file=terraform.tfvars
+      run: terraform -chdir=terraform plan
     - name: Terraform Apply
       if: github.ref == 'refs/heads/trunk' && github.event_name == 'push'
-      run: terraform -chdir=terraform apply -auto-approve -var-file=terraform.tfvars
+      run: terraform -chdir=terraform apply -auto-approve
