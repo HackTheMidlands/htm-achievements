@@ -94,7 +94,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.tls=true"
-      - "traefik.http.routers.api.rule=Host(`api.${DOMAIN:-achieve.localhost}`)"
+      - "traefik.http.routers.api.rule=Host(`${DOMAIN:-achieve.localhost}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.middlewares=api-prefix@file"
     environment:
       DOMAIN: "${DOMAIN:-achieve.localhost}"
       DATABASE_URL: "postgresql://${API_DB_USERNAME}:${API_DB_PASSWORD}@db/api"

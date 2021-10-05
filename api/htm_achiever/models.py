@@ -7,7 +7,7 @@ from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import Query, relationship
 from sqlalchemy.sql import functions as func
 
-from .db import Base
+from .db import Base, engine
 
 
 class User(Base):
@@ -81,3 +81,6 @@ class PendingAchievement(Base):
     )
 
     user_reference = Column(String)
+
+def init():
+    Base.metadata.create_all(bind=engine)

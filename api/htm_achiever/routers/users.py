@@ -36,6 +36,7 @@ def read_users(
 
 @router.get("/users/@me", response_model=schemas.User, tags=["users"])
 def read_me(token: models.Token = Depends(get_token)):
+    print('me!')
     return token.owner
 
 

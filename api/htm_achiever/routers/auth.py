@@ -27,18 +27,18 @@ oauth.register(
         "prompt": "none",
     },
 )
-oauth.register(
-    name="twitter",
-    api_base_url="https://api.twitter.com/1.1/",
-    access_token_url="https://api.twitter.com/oauth/access_token",
-    request_token_url="https://api.twitter.com/oauth/request_token",
-    authorize_url="https://api.twitter.com/oauth/authenticate",
-    client_id=config.TwitterOauthClientID,
-    client_secret=config.TwitterOauthClientSecret,
-    client_kwargs={
-        "scope": config.TwitterOauthClientScopes,
-    },
-)
+#  oauth.register(
+    #  name="twitter",
+    #  api_base_url="https://api.twitter.com/1.1/",
+    #  access_token_url="https://api.twitter.com/oauth/access_token",
+    #  request_token_url="https://api.twitter.com/oauth/request_token",
+    #  authorize_url="https://api.twitter.com/oauth/authenticate",
+    #  client_id=config.TwitterOauthClientID,
+    #  client_secret=config.TwitterOauthClientSecret,
+    #  client_kwargs={
+        #  "scope": config.TwitterOauthClientScopes,
+    #  },
+#  )
 
 
 def _make_get_token(allow_invalid=False):

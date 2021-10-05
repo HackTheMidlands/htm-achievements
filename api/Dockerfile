@@ -1,13 +1,13 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8 as prod
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9 as prod
 
 ENV FORWARDED_ALLOW_IPS="*"
 
-COPY ./setup.cfg ./pyproject.toml /app/
-RUN pip install .
+RUN pip install -U pip
 
 COPY ./ /app/
-RUN pip install .
+RUN pip install --use-feature=in-tree-build .
 
+ENV MODULE_NAME=htm_achiever.main
 FROM prod as dev
 
 CMD /start-reload.sh
