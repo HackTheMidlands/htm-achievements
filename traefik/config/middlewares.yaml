@@ -7,3 +7,7 @@ http:
         accessControlAllowMethods: "OPTIONS,GET,POST,PUT,PATCH,DELETE"
         accessControlAllowCredentials: "true"
         accessControlAllowOriginListRegex: 'https?://([^.]+\.)?achieve.localhost(/.*)?'
+    api-prefix:
+      stripPrefix:
+        prefixes:
+          - "/api"

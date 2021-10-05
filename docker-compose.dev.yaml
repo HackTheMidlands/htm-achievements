@@ -25,4 +25,4 @@ services:
       context: ./api
       target: dev
     volumes:
-      - "./api/app:/app/app"
+      - "./api/htm_achiever:/app/htm_achiever"

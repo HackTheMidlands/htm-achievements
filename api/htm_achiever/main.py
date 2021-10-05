@@ -1,13 +1,10 @@
 from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
-from . import config, models
-from .db import engine
-from .routers import achievements, auth, users,external
+from . import config
+from .routers import achievements, auth, users, external
 
-models.Base.metadata.create_all(bind=engine)
-
-app = FastAPI()
+app = FastAPI(root_path="/api")
 app.add_middleware(SessionMiddleware, secret_key=config.SessionSecret)
 
 
