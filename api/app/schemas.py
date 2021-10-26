@@ -66,3 +66,6 @@ class PendingAchievementBase(BaseModel):
 class PendingAchievement(PendingAchievementBase):
     class Config:
         orm_mode = True
+
+class Achievement_External(BaseModel):
+    msg:str

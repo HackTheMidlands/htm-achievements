@@ -50,7 +50,7 @@ function App() {
           <div className="heading_head">
             <h3 className="head">HackTheMidlands 6.0</h3>
             <h1 className="head">Achievements</h1>
-            <p className="head">Track your progress throughout the hackathon. The more you learn, the more you earn.</p>
+            <p className="head">Track your progress throughout the hackathon 🥳</p>
           </div>
           {/* <img src="htm.png" className="logo"> */}
         </div>

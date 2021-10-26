@@ -15,3 +15,5 @@ DiscordOauthClientScopes = "identify"
 TwitterOauthClientID = os.environ["TWITTER_OAUTH_CLIENT_ID"]
 TwitterOauthClientSecret = os.environ["TWITTER_OAUTH_CLIENT_SECRET"]
 TwitterOauthClientScopes = "identify"
+
+ExternalAPIToken = os.environ["EXTERNAL_API_TOKEN"]
