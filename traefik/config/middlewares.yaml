@@ -11,3 +11,7 @@ http:
       stripPrefix:
         prefixes:
           - "/api"
+    admin-prefix:
+      stripPrefix:
+        prefixes:
+          - "/admin"

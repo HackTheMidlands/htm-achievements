@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     command:
       - --api.dashboard=true
+      # - --log.level=debug
+      - --accesslog=true
 
       - --providers.file=true
       - --providers.file.directory=/traefik/config
@@ -58,11 +60,13 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.admin.loadbalancer.server.port=80"
       - "traefik.http.routers.admin.service=admin"
-      - "traefik.http.routers.admin.rule=Host(`admin.${DOMAIN:-achieve.localhost}`)"
+      - "traefik.http.routers.admin.rule=Host(`${DOMAIN:-achieve.localhost}`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.admin.priority=100"
+      - "traefik.http.routers.admin.middlewares=admin-prefix@file"
       - "traefik.http.routers.admin.tls=true"
 
   web:
-    image: ghcr.io/hackthemidlands/htm-achievements/ui:${TAG}
+    image: ghcr.io/hackthemidlands/htm-achievements/web:${TAG}
     build:
       context: ./web
       target: prod
