@@ -24,6 +24,16 @@ function App() {
 
   const [user, setLoggedIn] = useState(false);
   const [achievements, setAchievements] = useState([]);
+  const CTFs = [
+    "Terms of Service",
+    "Find Me",
+    "PingIT",
+    "Commitment Issues",
+    "Totally Cool Bookings",
+    "Deep Dive",
+    "Flag Checker",
+    "Address Book"
+  ]
 
   // On component mount: Check if user logged in, if so load their achievements
   useEffect(() => {
@@ -105,6 +115,9 @@ function App() {
           <AchieveHolder
             name={"Capture That Flag"}
           >
+            {CTFs.map(ctf => 
+              <Achievement key={ctf} icon={flag} name={ctf} active={(achievements.some(e => e.name === ctf))}></Achievement>
+            )}
             {/* <Achievement icon={flag} name={"Flag 1"} description={"Its time to test your security skills. Join the CTF and capture that first flag to show us what you've got."} active={(achievements.some(e => e.name === 'Flag 1'))}></Achievement>
             <Achievement icon={flag} name={"Flag 2"} active={(achievements.some(e => e.name === 'Flag 2'))}></Achievement>
             <Achievement icon={flag} name={"Flag 3"} active={(achievements.some(e => e.name === 'Flag 3'))}></Achievement> */}
