@@ -51,7 +51,7 @@ jobs:
         with:
           context: ${{ matrix.image }}
           build-args: |
-            REACT_APP_HOST=${{ secrets.HOSTNAME }}
+            REACT_APP_HOST=achievements.hackthemidlands.com
           target: prod
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
