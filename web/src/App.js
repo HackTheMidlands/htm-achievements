@@ -116,7 +116,7 @@ function App() {
             name={"Capture That Flag"}
           >
             {CTFs.map(ctf => 
-              <Achievement key={ctf} icon={flag} name={ctf} active={(achievements.some(e => e.name === ctf))}></Achievement>
+              <Achievement key={ctf} icon={flag} name={ctf} requirements={[{ text: ctf, active: (achievements.some(e => e.name === ctf)) }]} active={(achievements.some(e => e.name === ctf))}></Achievement>
             )}
             {/* <Achievement icon={flag} name={"Flag 1"} description={"Its time to test your security skills. Join the CTF and capture that first flag to show us what you've got."} active={(achievements.some(e => e.name === 'Flag 1'))}></Achievement>
             <Achievement icon={flag} name={"Flag 2"} active={(achievements.some(e => e.name === 'Flag 2'))}></Achievement>
