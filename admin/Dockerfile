@@ -8,6 +8,7 @@ RUN yarn install
 
 # stage: builder
 FROM dependencies AS builder
+ENV PUBLIC_URL=/admin
 COPY ./ /app/
 RUN yarn build
 
