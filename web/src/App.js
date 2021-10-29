@@ -36,6 +36,113 @@ function App() {
     "Address Book"
   ]
 
+  const mainAchieves = [
+    {
+      name: "By the way",
+      description: "Awarded when you mention (arch) linux",
+      icon: programming,
+    },
+    {
+      name: "Their one purpose",
+      description: "Awarded when you interact with a bot on the HTM Discord",
+      icon: programming,
+    },
+    {
+      name: "Night owl",
+      description: "Awarded when you message late at night",
+      icon: programming,
+    },
+    {
+      name: "Early bird",
+      description: "Awarded when you message really early on the HTM Discord",
+      icon: programming,
+    },
+    {
+      name: "Smile",
+      description:
+        "Awarded when you post in the pics-and-stuff on the HTM Discord",
+      icon: programming,
+    },
+    {
+      name: "Over a coffee",
+      description:
+        "Awarded when you post in the chat-with-sponsors channel on the HTM discord",
+      icon: programming,
+    },
+    {
+      name: "Nice to meet you",
+      description:
+        "Awarded when you post in the introductions channel on the HTM Discord",
+      icon: programming,
+    },
+    {
+      name: "How do I quit?",
+      description: "Awarded when you use the Vim emoji",
+      icon: programming,
+    },
+    {
+      name: "Boosted",
+      description: "When they boost the Server :D",
+      icon: programming,
+    },
+    {
+      name: "Willing Sacrifice",
+      description: "Signed up for a mentor role",
+      icon: programming,
+    },
+    {
+      name: "Unicorn Farmer",
+      description: "Used all HTM unicorns at least once",
+      icon: programming,
+    },
+    {
+      name: "Eggy Weggy",
+      description: "Found a secret easter egg",
+      icon: programming,
+    },
+    {
+      name: "Check(point) Mate",
+      description: "Turned up to a checkpoint",
+      icon: programming,
+    },
+    {
+      name: "Tough as Nails",
+      description: "DId a hardware hack",
+      icon: programming,
+    },
+    {
+      name: "Pro Gamer",
+      description: "Turned up to a minigame",
+      icon: programming,
+    },
+    {
+      name: "Hacker Spirit",
+      description: "Showed true hacker spirit",
+      icon: programming,
+    },
+    {
+      name: "Bot Fanatic",
+      description: "Used a Discord Bot",
+      icon: programming,
+    },
+    {
+      name: "Wowzers",
+      description: "Submitted a project to Devpost",
+      icon: programming,
+    },
+    {
+      name: "Artist",
+      description:
+        "Collaborate with us to create a spooooooky Bob Ross painting",
+      icon: programming,
+    },
+    {
+      name: "Dancer",
+      description: "Post a dance in #dances",
+      icon: programming,
+    },
+  ];
+
   // On component mount: Check if user logged in, if so load their achievements
   useEffect(() => {
     AuthProvider.checkAuth().then(user_ => {
@@ -114,6 +221,9 @@ function App() {
               requirements={[{ text: "Link your twitch", active: (achievements.some(e => e.name === 'Workshop')) }]}
             ></Achievement>
 
+          {mainAchieves.map(a =>
+            <Achievement key={a} icon={a.icon} name={a.name} description={a.description} requirements={[]} active={(achievements.some(e => e.name === a.name))}></Achievement>
+          )}
 
           </AchieveHolder>
 
