@@ -2,6 +2,7 @@
 import { FontAwesomeIcon } from  '@fortawesome/react-fontawesome'//'./nofortawesome/react-fontawesome'
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { FcAbout } from "react-icons/fc";
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -51,7 +52,7 @@ export class Achievement extends Component {
 
             return (
                 <div className="achieve_box" ref={this.wrapperRef}>
-                    <img className={this.props.active?"achieve":"achieve_disactive"} onClick={() => this.setState({ active: true })} src={this.props.icon}></img>
+                    <div className={this.props.active?"achieve":"achieve_disactive"} onClick={() => this.setState({ active: true })} >{this.props.icon}</div>
                     <ToolTip active={this.state.active} name={this.props.name} desc={this.props.description} requirements={this.props.requirements}></ToolTip>
                     <div className="achieve_label">{this.props.name}</div>
                 </div>

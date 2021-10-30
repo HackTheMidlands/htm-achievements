@@ -8,6 +8,15 @@ import { FontAwesomeIcon } from  '@fortawesome/react-fontawesome'
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import {faDiscord} from '@fortawesome/free-brands-svg-icons'
 import {Helmet} from "react-helmet";
+import {AiFillTwitterSquare} from 'react-icons/ai'
+import {BsDiscord} from 'react-icons/bs'
+import {BiCoffeeTogo} from 'react-icons/bi'
+import {FaEarlybirds, FaRobot, FaPaintRoller, FaGamepad,FaPaintBrush} from 'react-icons/fa'
+import {GiEasterEgg, GiOwl, GiSharpSmile, GiSacrificialDagger, GiUnicorn,GiNails, GiSparkSpirit, GiMegabot} from 'react-icons/gi'
+import {FcClock} from 'react-icons/fc'
+import {GrArchlinux} from 'react-icons/gr'
+import {SiVim, SiDiscord, SiBytedance} from 'react-icons/si'
+import {ImShocked} from 'react-icons/im'
 
 // import ReactDOM from 'react-dom'
 
@@ -40,106 +49,106 @@ function App() {
     {
       name: "By the way",
       description: "Awarded when you mention (arch) linux",
-      icon: programming,
+      icon: <GrArchlinux/>,
     },
     {
       name: "Their one purpose",
       description: "Awarded when you interact with a bot on the HTM Discord",
-      icon: programming,
+      icon: <FaRobot/>,
     },
     {
       name: "Night owl",
       description: "Awarded when you message late at night",
-      icon: programming,
+      icon: <GiOwl/>,
     },
     {
       name: "Early bird",
       description: "Awarded when you message really early on the HTM Discord",
-      icon: programming,
+      icon: <FaEarlybirds/>,
     },
     {
       name: "Smile",
       description:
         "Awarded when you post in the pics-and-stuff on the HTM Discord",
-      icon: programming,
+      icon: <GiSharpSmile/>,
     },
     {
       name: "Over a coffee",
       description:
         "Awarded when you post in the chat-with-sponsors channel on the HTM discord",
-      icon: programming,
+      icon: <BiCoffeeTogo/>,
     },
     {
       name: "Nice to meet you",
       description:
         "Awarded when you post in the introductions channel on the HTM Discord",
-      icon: programming,
+      icon: <FaPaintRoller/>,
     },
     {
       name: "How do I quit?",
       description: "Awarded when you use the Vim emoji",
-      icon: programming,
+      icon: <SiVim/>,
     },
     {
       name: "Boosted",
       description: "When they boost the Server :D",
-      icon: programming,
+      icon: <SiDiscord/>,
     },
     {
       name: "Willing Sacrifice",
       description: "Signed up for a mentor role",
-      icon: programming,
+      icon: <GiSacrificialDagger/>,
     },
     {
       name: "Unicorn Farmer",
       description: "Used all HTM unicorns at least once",
-      icon: programming,
+      icon: <GiUnicorn/>,
     },
     {
       name: "Eggy Weggy",
       description: "Found a secret easter egg",
-      icon: programming,
+      icon: <GiEasterEgg/>,
     },
     {
       name: "Check(point) Mate",
       description: "Turned up to a checkpoint",
-      icon: programming,
+      icon: <FcClock/>,
     },
     {
       name: "Tough as Nails",
       description: "DId a hardware hack",
-      icon: programming,
+      icon: <GiNails/>,
     },
     {
       name: "Pro Gamer",
       description: "Turned up to a minigame",
-      icon: programming,
+      icon: <FaGamepad/>,
     },
     {
       name: "Hacker Spirit",
       description: "Showed true hacker spirit",
-      icon: programming,
+      icon: <GiSparkSpirit/>,
     },
     {
       name: "Bot Fanatic",
       description: "Used a Discord Bot",
-      icon: programming,
+      icon: <GiMegabot/>,
     },
     {
       name: "Wowzers",
       description: "Submitted a project to Devpost",
-      icon: programming,
+      icon: <ImShocked/>,
     },
     {
       name: "Artist",
       description:
         "Collaborate with us to create a spooooooky Bob Ross painting",
-      icon: programming,
+      icon: <FaPaintBrush/>,
     },
     {
       name: "Dancer",
       description: "Post a dance in #dances",
-      icon: programming,
+      icon: <SiBytedance/>,
     },
   ];
 
@@ -180,12 +189,12 @@ function App() {
           <AchieveHolder
             name={"Getting Started"}
           >
-            <Achievement icon={logo} name={"The First Step"} description={"The first step on a long and happy journey. This is where it all begins."}
+            <Achievement icon={<img src={logo}/>} name={"The First Step"} description={"The first step on a long and happy journey. This is where it all begins."}
               requirements={[{ text: 'Link your Discord', active: true }]}
               active={true}></Achievement>
 
             <Achievement
-              icon={tweet}
+              icon={<img src={tweet}/>}
               name={"Shout Out"}
               description={"Let us know about your project by tweeting using #HackTheMidlands"}
               active={(achievements.some(e => e.name === 'Shout Out'))}
@@ -200,21 +209,21 @@ function App() {
           <AchieveHolder
             name={"The Main Event"}
           >
-            <Achievement icon={map}
+            <Achievement icon={<img src={map}/>}
               name={"Checkup"}
               active={(achievements.some(e => e.name === 'Checkup'))}
               description={"Join the checkpoint session on Discord and let us know how your project is getting on."}
               requirements={[{ text: "Attend the Checkpoint on Discord at 2PM Date", active: (achievements.some(e => e.name === 'Checkup')) }]}
             ></Achievement>
 
-            <Achievement icon={signboard}
+            <Achievement icon={<img src={signboard}/>}
               name={"Check Point 2"}
               active={(achievements.some(e => e.name === 'Check Point 2'))}
               description={"Join the checkpoint session on Discord and let us know how your project is getting on."}
               requirements={[{ text: "Attend the Checkpoint on Discord at 2PM Date", active: (achievements.some(e => e.name === 'Check Point 2')) }]}
             ></Achievement>
 
-            <Achievement icon={workshop}
+            <Achievement icon={<img src={workshop}/>}
               name={"Workshop"}
               active={(achievements.some(e => e.name === 'Workshop'))}
               description={"Come along to one of our workshops to get some tips and tricks."}
@@ -231,7 +240,7 @@ function App() {
             name={"Capture That Flag"}
           >
             {CTFs.map(ctf => 
-              <Achievement key={ctf} icon={flag} name={ctf} requirements={[{ text: ctf, active: (achievements.some(e => e.name === ctf)) }]} active={(achievements.some(e => e.name === ctf))}></Achievement>
+              <Achievement key={ctf} icon={<img src={flag}/>} name={ctf} requirements={[{ text: ctf, active: (achievements.some(e => e.name === ctf)) }]} active={(achievements.some(e => e.name === ctf))}></Achievement>
             )}
             {/* <Achievement icon={flag} name={"Flag 1"} description={"Its time to test your security skills. Join the CTF and capture that first flag to show us what you've got."} active={(achievements.some(e => e.name === 'Flag 1'))}></Achievement>
             <Achievement icon={flag} name={"Flag 2"} active={(achievements.some(e => e.name === 'Flag 2'))}></Achievement>
