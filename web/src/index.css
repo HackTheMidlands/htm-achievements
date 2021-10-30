@@ -146,6 +146,14 @@ p.head {
   cursor: pointer;
   position: relative;
 }
+.achieve svg {
+  height: 100%;
+  width: 100%;
+}
+.achieve_disactive svg {
+  height: 100%;
+  width: 100%;
+}
 
 .achieve:hover {
   height: 120px;
