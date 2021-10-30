@@ -165,8 +165,8 @@ p.head {
 
 
 .achieve_disactive {
-  filter: grayscale(100%);
-  opacity: 10%;
+  filter: grayscale(100%) opacity(10%);
+  /* opacity: 10%; */
   height: 100px;
   width: 100px;
   transition: all 0.2s;
